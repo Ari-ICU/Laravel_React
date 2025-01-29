@@ -18,14 +18,20 @@ export const CategoryProvider = ({ children }) => {
     setLoading(true);
     setError("");
     try {
+      // Fetch products based on the category from the API
       const response = await fetch(
-        `https://api.example.com/products?category=${category}`
+        `http://localhost:4000/category/${category}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch products");
       }
       const data = await response.json();
-      setProducts(data);
+
+      // Filter data by category to ensure it matches
+      const filteredProducts = data.filter(
+        (product) => product.category.toLowerCase() === category.toLowerCase()
+      );
+      setProducts(filteredProducts);
     } catch (error) {
       setError(error.message);
     } finally {

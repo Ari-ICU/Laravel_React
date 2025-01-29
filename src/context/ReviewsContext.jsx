@@ -26,8 +26,19 @@ const ReviewsProvider = ({ children }) => {
     fetchReviews();
   }, []);
 
+  const addReviews = async () => {
+    try {
+      const response = await axios.post("/api/reviews");
+      setReviews(response.data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <ReviewsContext.Provider value={{ reviews, loading, error }}>
+    <ReviewsContext.Provider value={{ reviews, addReviews, loading, error }}>
       {children}
     </ReviewsContext.Provider>
   );

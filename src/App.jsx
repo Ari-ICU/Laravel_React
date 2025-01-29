@@ -19,6 +19,7 @@ import Cart from "./pages/Cart";
 import Wishlist from "./pages/Wishlist";
 import UserProfile from "./pages/UserProfile";
 import AuthPage from "./pages/Auth";
+import SignUpPage from "./pages/SignUp";
 
 function App() {
   return (
@@ -117,7 +118,14 @@ function App() {
                   </Layout>
                 }
               />
-
+              <Route
+                path="/signup"
+                element={
+                  <Layout>
+                    <SignUpPage />
+                  </Layout>
+                }
+              />
               <Route
                 path="/terms"
                 element={

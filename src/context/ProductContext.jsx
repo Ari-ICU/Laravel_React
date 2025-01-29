@@ -10,28 +10,8 @@ export const useProduct = () => {
 };
 
 export const ProductProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
   const [products, setProducts] = useState([]);
   const [singleProduct, setSingleProduct] = useState(null);
-
-  const addToCart = async (productId) => {
-    try {
-      const response = await axios.post("/api/cart", { productId });
-      setCart(response.data.cart);
-    } catch (error) {
-      console.error("Failed to add to cart", error);
-    }
-  };
-
-  const addToWishlist = async (productId) => {
-    try {
-      const response = await axios.post("/api/wishlist", { productId });
-      setWishlist(response.data.wishlist);
-    } catch (error) {
-      console.error("Failed to add to wishlist", error);
-    }
-  };
 
   const fetchProducts = async () => {
     try {
@@ -56,12 +36,8 @@ export const ProductProvider = ({ children }) => {
   return (
     <ProductContext.Provider
       value={{
-        cart,
-        wishlist,
         products,
         singleProduct,
-        addToCart,
-        addToWishlist,
         fetchProducts,
         fetchSingleProduct,
       }}

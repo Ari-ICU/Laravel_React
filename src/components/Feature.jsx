@@ -47,7 +47,7 @@ const Feature = () => {
         Product Features
       </h1>
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 px-2"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2 justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -55,7 +55,7 @@ const Feature = () => {
         {products.slice(4, 10).map((product, index) => (
           <motion.div
             key={product.id}
-            className="p-6 max-w-sm bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 space-y-4"
+            className="p-6 max-w-sm bg-white justify-center rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 space-y-4"
             initial={{ opacity: 0.4, y: -30, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
             transition={{ delay: index * 0.2 }}

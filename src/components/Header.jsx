@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logo.jpeg";
 import { FaShoppingCart, FaHeart, FaSearch } from "react-icons/fa";
+import { FaUserAlt, FaSignInAlt } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
-const ProfileDropdown = () => {
+const ProfileDropdown = ({ user, signOut }) => {
   const dropdownVariants = {
     hidden: { opacity: 0, y: -10 },
     visible: { opacity: 1, y: 0 },
@@ -24,21 +26,23 @@ const ProfileDropdown = () => {
     >
       <div className="px-4 py-3">
         <span className="block text-sm text-gray-900 dark:text-white">
-          Bonnie Green
+          {user?.name}
         </span>
         <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
-          thoeurn.ratha.kh@gmail.com
+          {user?.email}
         </span>
       </div>
       <ul className="py-2" aria-labelledby="user-menu-button">
-        <li className="relative text-center">
-          <Link
-            to="/auth"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-          >
-            Sign out
-          </Link>
-        </li>
+        {user && (
+          <li className="relative text-center">
+            <button
+              onClick={signOut} // Trigger sign-out from the AuthContext
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+            >
+              Sign out
+            </button>
+          </li>
+        )}
       </ul>
     </motion.div>
   );
@@ -229,6 +233,8 @@ const Header = () => {
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
 
+  const { user, signOut } = useAuth();
+
   useEffect(() => {
     // Reset the menu states when the route changes
     setIsMobileMenuOpen(false);
@@ -255,22 +261,13 @@ const Header = () => {
     setIsMobileMenuOpen(false); // Close mobile menu when dropdown is opened
   };
 
-  const handleProfileMouseEnter = () => {
-    setIsProfileHovered(true);
-  };
-
-  const handleProfileMouseLeave = () => {
-    if (!isProfileClicked) {
-      setIsProfileHovered(false);
-    }
-  };
-
   const toggleProfileDropdown = () => {
-    setIsProfileClicked(!isProfileClicked);
-    if (!isProfileClicked) {
-      setIsProfileHovered(true); // Keep it open if clicked
+    if (isProfileHovered || isProfileClicked) {
+      setIsProfileClicked(false);
+      setIsProfileHovered(false); // Close if clicked or hovered again
     } else {
-      setIsProfileHovered(false); // Close if clicked again
+      setIsProfileClicked(true); // Stay open on click
+      setIsProfileHovered(true); // Keep it open when hovered
     }
   };
 
@@ -321,26 +318,34 @@ const Header = () => {
             <Link to="tel:855888639316" className="text-sm  hover:underline">
               (855) 888-639-316
             </Link>
-            <div
-              className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
-              onMouseEnter={handleProfileMouseEnter}
-              onMouseLeave={handleProfileMouseLeave}
-            >
-              <Link
-                to="/profile"
-                className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                onClick={toggleProfileDropdown} // Toggle profile dropdown on click
-              >
-                <span className="sr-only">Open user menu</span>
-                <img
-                  className="w-8 h-8 rounded-full"
-                  src="/docs/images/people/profile-picture-3.jpg"
-                  alt="user photo"
-                />
-              </Link>
-
-              {/* User Dropdown */}
-              {(isProfileHovered || isProfileClicked) && ProfileDropdown()}
+            <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+              {user ? (
+                // If user is logged in, show profile icon
+                <Link
+                  to="/profile"
+                  className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                  onClick={toggleProfileDropdown}
+                  onMouseEnter={() => setIsProfileHovered(true)}
+                  onMouseLeave={() => setIsProfileHovered(false)}
+                >
+                  <span className="sr-only">Open user menu</span>
+                  <FaUserAlt className="w-8 h-8 text-white" />
+                  {/* Logged-in icon */}
+                </Link>
+              ) : (
+                // If user is not logged in, show sign-in icon
+                <Link
+                  to="/auth"
+                  className="text-sm text-gray-900 dark:text-white hover:underline"
+                >
+                  <FaSignInAlt className="w-6 h-6 text-gray-300" />
+                  {/* Sign-in icon */}
+                </Link>
+              )}
+              {(isProfileHovered || isProfileClicked) && user && (
+                // Only show profile dropdown if user is logged in
+                <ProfileDropdown user={user} signOut={signOut} />
+              )}
             </div>
           </div>
         </div>

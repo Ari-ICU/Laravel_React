@@ -93,6 +93,12 @@ const AuthPage = () => {
               >
                 Sign In
               </button>
+              <p className="mt-4 text-sm text-gray-600">
+                Don't have an account?{" "}
+                <a href="/signup" className="text-blue-500">
+                  Sign Up
+                </a>
+              </p>
             </form>
           </motion.div>
         )}

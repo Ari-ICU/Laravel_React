@@ -2,9 +2,26 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useCategory } from "../context/CategoryContext";
+import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
+import { useParams } from "react-router-dom";
 
 const Category = () => {
-  const { categoryName, products, loading, error } = useCategory(); // Get data from context
+  const { categoryName } = useParams();
+  const { products, loading, error } = useCategory();
+  const { addToCart } = useCart();
+  const { addToWishlist } = useWishlist();
+
+  // Handle Add to Cart functionality
+  const handleAddToCart = (product) => {
+    addToCart(product);
+  };
+
+  //Handle Add to cart
+  const handleAddWishlist = (product) => {
+    addToWishlist(product);
+  };
 
   if (loading) {
     return (
@@ -35,26 +52,65 @@ const Category = () => {
   return (
     <div className="container mx-auto p-4">
       <motion.h1
-        className="text-4xl font-extrabold text-center mb-6"
+        className="text-4xl text-white font-extrabold text-center mb-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         Category: {categoryName}
       </motion.h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         {products.length === 0 ? (
           <p>No products available in this category.</p>
         ) : (
           products.map((product) => (
             <div key={product.id} className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold">{product.name}</h2>
-              <p className="text-gray-600">{product.description}</p>
-              <p className="text-gray-500 text-sm">Price: ${product.price}</p>
+              <Link to={`/product/${product.id}`}>
+                <img
+                  src={product.image}
+                  alt={`Product: ${product.title}`}
+                  className="w-full h-40 object-cover rounded-md"
+                />
+              </Link>
+              <Link to={`/product/${product.id}`}>
+                <h2 className="text-xl font-semibold">{product.title}</h2>
+              </Link>
+              <p className="text-gray-500 truncate">{product.description}</p>
+              <div className="flex justify-between items-center">
+                <p className="text-lg font-bold text-green-600">
+                  ${product.price.toFixed(2)}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Category: {product.category}
+                </p>
+              </div>
+              <p className="text-yellow-500">
+                Rating: {product.rating?.rate} ★ ({product.rating?.count}{" "}
+                reviews)
+              </p>
+              <div className="flex justify-between items-center">
+                <button
+                  onClick={() => handleAddWishlist(product)}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
+                >
+                  Wishlist
+                </button>
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
+                >
+                  Add to Cart
+                </button>
+              </div>
             </div>
           ))
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };

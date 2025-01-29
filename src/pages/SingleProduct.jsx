@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
-import { ProductContext } from "../context/ProductContext";
+import { useProduct } from "../context/ProductContext";
 
 // Create a reusable Loader component
 const Loader = () => (
@@ -14,47 +14,43 @@ const ErrorMessage = ({ message }) => (
 );
 
 const SingleProduct = () => {
-  const { fetchSingleProduct, singleProduct } = useContext(ProductContext);
+  const { fetchSingleProduct, singleProduct } = useProduct();
   const { id } = useParams();
   const [error, setError] = useState(null);
-  const [quantity, setQuantity] = useState(1); // State to manage quantity
+  const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState("");
 
-  // Fetch the product data when the component mounts
+  // Fetch the product details when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await fetchSingleProduct(id);
-        setError(null); // Clear error on successful fetch
+        await fetchSingleProduct(id); // Fetch the product by ID
+        setError(null); // Clear any previous errors
       } catch (err) {
-        console.error("Fetch error: ", err); // Log the error for debugging
+        console.error("Fetch error: ", err);
         setError("Failed to load product details.");
       }
     };
 
     fetchData();
-  }, [fetchSingleProduct, id]);
+  }, [fetchSingleProduct, id]); // Trigger fetch on ID change
 
-  // Ensure selectedImage is set only once after data is fetched
   useEffect(() => {
     if (singleProduct && singleProduct.image) {
       setSelectedImage(singleProduct.image);
     }
   }, [singleProduct]);
 
-  // Display error if any
   if (error) {
     return <ErrorMessage message={error} />;
   }
 
-  // Display loading state while waiting for product data
   if (!singleProduct) {
     return <Loader />;
   }
 
   const { title, description, price, category, stock } = singleProduct;
 
-  // Handle increase and decrease quantity
   const increaseQuantity = () => {
     if (quantity < stock) {
       setQuantity(quantity + 1);
@@ -76,7 +72,6 @@ const SingleProduct = () => {
     >
       {/* Left column (Product Image) */}
       <div className="flex flex-col items-center">
-        {/* Display selected image */}
         {selectedImage && (
           <img
             src={selectedImage}

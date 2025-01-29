@@ -8,6 +8,7 @@ export const useAuth = () => {
 
 export const SignOutProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
   const signIn = async (credentials) => {
     try {
@@ -20,9 +21,10 @@ export const SignOutProvider = ({ children }) => {
       });
 
       if (response.ok) {
+        const userData = await response.json(); // Assuming the response contains user data
+        setUser(userData); // Save user data in the state
         setIsAuthenticated(true);
       } else {
-        // Handle sign-in error
         console.error("Sign-in failed");
       }
     } catch (error) {
@@ -37,9 +39,9 @@ export const SignOutProvider = ({ children }) => {
       });
 
       if (response.ok) {
+        setUser(null); // Clear user data on sign-out
         setIsAuthenticated(false);
       } else {
-        // Handle sign-out error
         console.error("Sign-out failed");
       }
     } catch (error) {
@@ -48,7 +50,7 @@ export const SignOutProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn, signOut }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

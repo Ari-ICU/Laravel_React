@@ -2,13 +2,27 @@ import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useProduct } from "../context/ProductContext";
 import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 
 const Product = () => {
   const { fetchProducts, products } = useProduct();
+  const { addToCart } = useCart();
+  const { addToWishlist } = useWishlist();
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  // Handle Add to Cart functionality
+  const handleAddToCart = (product) => {
+    addToCart(product);
+  };
+
+  //Handle Add to cart
+  const handleAddWishlist = (product) => {
+    addToWishlist(product);
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -48,10 +62,16 @@ const Product = () => {
               Rating: {product.rating?.rate} ★ ({product.rating?.count} reviews)
             </p>
             <div className="flex justify-between items-center">
-              <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition">
+              <button
+                onClick={() => handleAddWishlist(product)}
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
+              >
                 Wishlist
               </button>
-              <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition">
+              <button
+                onClick={() => handleAddToCart(product)}
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
+              >
                 Add to Cart
               </button>
             </div>
