@@ -1,35 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { useCarousel } from "../context/CarouselContext";
 
 const Carousel = () => {
-  const [images, setImages] = useState([]);
+  const { carousels, loading, error } = useCarousel();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const response = await fetch("https://api.example.com/carousels");
-        const data = await response.json();
-        setImages(data.carousels || []);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching images:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchImages();
-  }, []);
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % carousels.length);
   };
 
   const handlePrev = () => {
     setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + images.length) % images.length
+      (prevIndex) => (prevIndex - 1 + carousels.length) % carousels.length
     );
   };
 
@@ -46,7 +30,20 @@ const Carousel = () => {
     );
   }
 
-  if (images.length === 0) {
+  if (error) {
+    return (
+      <motion.div
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-center text-red-500">{error}</p>
+      </motion.div>
+    );
+  }
+
+  if (carousels.length === 0) {
     return (
       <motion.div
         className=" max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
@@ -75,7 +72,7 @@ const Carousel = () => {
         className="w-full h-64"
       >
         <img
-          src={images[currentIndex].url}
+          src={carousels[currentIndex].url}
           alt="carousel"
           className="w-full h-full object-cover rounded-lg"
         />

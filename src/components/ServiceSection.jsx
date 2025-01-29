@@ -44,7 +44,9 @@ const ServiceSection = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <h3 className="text-xl font-semibold mb-4">{service.title}</h3>
+              <h3 className="text-xl text-gray-600 font-semibold mb-4">
+                {service.title}
+              </h3>
               <p className="text-gray-600">{service.description}</p>
             </motion.div>
           ))}

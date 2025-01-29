@@ -1,44 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useProduct } from "../context/ProductContext";
+import { useCart } from "../context/CartContext"; // Import useCart hook
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { useWishlist } from "../context/WishlistContext";
 
 const Feature = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { products, fetchProducts } = useProduct();
+  const { addToCart } = useCart();
+  const { addToWishlist } = useWishlist();
 
-  // Fetch products data from an API
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("https://fakestoreapi.com/products");
-        const data = await response.json();
-        setProducts(data.slice(4, 10)); // Display products 5 to 10
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setLoading(false);
-      }
-    };
+  fetchProducts();
 
-    fetchProducts();
-  }, []);
-
-  if (loading) {
+  if (!products || products.length === 0) {
     return (
       <motion.div
-        className="max-w-sm mt-10 mb-10 mx-auto bg-white p-4 rounded-xl shadow-lg"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <p className="text-center text-gray-500">Loading products...</p>
-      </motion.div>
-    );
-  }
-
-  if (products.length === 0) {
-    return (
-      <motion.div
-        className="max-w-sm mx-auto bg-white p-4 rounded-xl shadow-lg"
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white p-4 rounded-xl shadow-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -48,6 +25,17 @@ const Feature = () => {
     );
   }
 
+  // Handle Add to Cart functionality
+  const handleAddToCart = (product) => {
+    addToCart(product);
+  };
+
+  //Handle Add to cart
+  const handleAddWishlist = (product) => {
+    addToWishlist(product);
+  };
+
+  console.log(handleAddToCart, handleAddToCart);
   return (
     <motion.div
       className="container mx-auto px-4 py-8"
@@ -64,7 +52,7 @@ const Feature = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        {products.map((product, index) => (
+        {products.slice(4, 10).map((product, index) => (
           <motion.div
             key={product.id}
             className="p-6 max-w-sm bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 space-y-4"
@@ -72,14 +60,18 @@ const Feature = () => {
             animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
             transition={{ delay: index * 0.2 }}
           >
-            <img
-              src={product.image}
-              alt={`Product: ${product.title}`}
-              className="w-full h-40 object-cover rounded-md"
-            />
-            <h2 className="text-xl font-semibold text-gray-800">
-              {product.title}
-            </h2>
+            <Link to={`/product/${product.id}`}>
+              <img
+                src={product.image}
+                alt={`Product: ${product.title}`}
+                className="w-full h-40 object-cover rounded-md"
+              />
+            </Link>
+            <Link to={`/product/${product.id}`}>
+              <h2 className="text-xl font-semibold text-gray-800 hover:underline">
+                {product.title}
+              </h2>
+            </Link>
             <p className="text-gray-500 truncate">{product.description}</p>
             <div className="flex justify-between items-center">
               <p className="text-lg font-bold text-green-600">
@@ -93,12 +85,17 @@ const Feature = () => {
               Rating: {product.rating?.rate} ★ ({product.rating?.count} reviews)
             </p>
             <div className="flex justify-between items-center">
-              <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition">
-                Wishlist
-              </button>
-
-              <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition">
+              <button
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
+                onClick={() => handleAddToCart(product)}
+              >
                 Add to Cart
+              </button>
+              <button
+                onClick={() => handleAddWishlist(product)} // Add product to cart when clicked
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
+              >
+                Wishlist
               </button>
             </div>
           </motion.div>

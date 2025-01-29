@@ -1,29 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReviews } from "../context/ReviewsContext";
 
 const ReviewSection = () => {
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { reviews, loading, error } = useReviews();
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Fetch reviews from an API
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch(
-          "https://api.example.com/reviews" // Replace with your API endpoint
-        );
-        const data = await response.json();
-        setReviews(data.slice(0, 6));
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchReviews();
-  }, []);
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % reviews.length);
@@ -35,6 +16,7 @@ const ReviewSection = () => {
     );
   };
 
+  // Handle loading state
   if (loading) {
     return (
       <motion.div
@@ -48,24 +30,46 @@ const ReviewSection = () => {
     );
   }
 
-  if (reviews.length === 0) {
+  // Handle error state
+  if (error) {
     return (
       <motion.div
-        className=" max-w-sm mx-auto bg-white rounded-xl shadow-lg space-y-4"
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-center text-red-500">No reviews available.</p>
+        <p className="text-center text-red-500">
+          Failed to load reviews. Please try again.
+        </p>
+      </motion.div>
+    );
+  }
+
+  // Handle empty reviews state
+  if (reviews.length === 0) {
+    return (
+      <motion.div
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-center text-gray-500">No reviews available.</p>
       </motion.div>
     );
   }
 
   return (
     <div className="container mx-auto max-w-screen px-4 py-8">
-      <h1 className="text-2xl font-bold text-center text-white uppercase underline mb-6">
+      <motion.h1
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-2xl font-bold text-center text-white uppercase  mb-6"
+      >
         Customer Reviews
-      </h1>
+      </motion.h1>
       <div className="relative max-w-7xl mx-auto h-auto">
         <AnimatePresence>
           <motion.div

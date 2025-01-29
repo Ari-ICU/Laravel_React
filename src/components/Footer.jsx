@@ -67,6 +67,11 @@ const Social = () => {
   );
 };
 const Footer = () => {
+  const iconVariants = {
+    hover: { scale: 1.2, rotate: -50 },
+    rest: { scale: 1, rotate: 0 },
+  };
+
   return (
     <motion.footer
       inherit={{ x: 0, y: 0 }}
@@ -95,7 +100,7 @@ const Footer = () => {
             <h4 className="text-lg underline font-semibold mb-4">About</h4>
             <ul className="space-y-2">
               <li className="hover:underline">
-                <Link to="/term">Term &Condition</Link>
+                <Link to="/terms">Term &Condition</Link>
               </li>
               <li className="hover:underline">
                 <Link to="/privacy">Privacy &Policy</Link>
@@ -107,11 +112,51 @@ const Footer = () => {
               Payment Method
             </h4>
             <div className="flex flex-wrap space-x-4 space-y-4">
-              <img src={aba} alt="aba" className="h-8 w-10" />
-              <img src={acleda} alt="wing" className="h-8 w-10" />
-              <img src={wingbank} alt="ACLEDA" className="h-8 w-10" />
-              <img src={paypal} alt="paypal" className="h-8 w-10" />
-              <img src={crediCard} alt="paypal" className="h-8 w-10" />
+              <motion.img
+                initial="rest"
+                whileHover="hover"
+                variants={iconVariants}
+                transition={{ duration: 0.3 }}
+                src={aba}
+                alt="aba"
+                className="h-8 w-10"
+              />
+              <motion.img
+                initial="rest"
+                whileHover="hover"
+                variants={iconVariants}
+                transition={{ duration: 0.3 }}
+                src={acleda}
+                alt="wing"
+                className="h-8 w-10"
+              />
+              <motion.img
+                initial="rest"
+                whileHover="hover"
+                variants={iconVariants}
+                transition={{ duration: 0.3 }}
+                src={wingbank}
+                alt="ACLEDA"
+                className="h-8 w-10"
+              />
+              <motion.img
+                initial="rest"
+                whileHover="hover"
+                variants={iconVariants}
+                transition={{ duration: 0.3 }}
+                src={paypal}
+                alt="paypal"
+                className="h-8 w-10"
+              />
+              <motion.img
+                initial="rest"
+                whileHover="hover"
+                variants={iconVariants}
+                transition={{ duration: 0.3 }}
+                src={crediCard}
+                alt="paypal"
+                className="h-8 w-10"
+              />
             </div>
           </div>
           <div className="px-4 py-2">

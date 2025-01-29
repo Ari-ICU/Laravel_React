@@ -4,7 +4,7 @@ import Footer from "./Footer"; // Your footer component
 
 const Layout = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen">
       {/* Header */}
       <Header />
 

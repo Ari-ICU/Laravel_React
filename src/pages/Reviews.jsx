@@ -1,18 +1,40 @@
-import React from "react"; // Add this line
-import { useEffect, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
+import { useReviews } from "../context/ReviewsContext";
 
 const Reviews = () => {
-  const [reviews, setReviews] = useState([]);
+  const { reviews, loading, error } = useReviews();
 
-  useEffect(() => {
-    fetch("https://api.example.com/reviews")
-      .then((response) => response.json())
-      .then((data) => setReviews(data))
-      .catch((error) => console.error("Error fetching reviews:", error));
-  }, []);
+  if (loading) {
+    return (
+      <motion.div
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-center text-gray-500">Loading reviews...</p>
+      </motion.div>
+    );
+  }
 
-  if (reviews.length === 0) {
+  if (error) {
+    return (
+      <motion.div
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-center text-red-500">
+          Failed to load reviews. Please try again.
+        </p>
+      </motion.div>
+    );
+  }
+
+  // Ensure reviews is an array
+  if (!Array.isArray(reviews) || reviews.length === 0) {
     return (
       <motion.div
         className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"

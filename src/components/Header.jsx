@@ -13,13 +13,14 @@ const ProfileDropdown = () => {
 
   return (
     <motion.div
-      className="z-50 absolute top-12 right-2 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
+      className="z-50 absolute top-8 right-1 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
       id="user-dropdown"
       initial="hidden"
       animate="visible"
       exit="hidden"
       variants={dropdownVariants}
       transition={{ duration: 0.3 }}
+      style={{ pointerEvents: "auto" }} // Ensure it's clickable
     >
       <div className="px-4 py-3">
         <span className="block text-sm text-gray-900 dark:text-white">
@@ -31,12 +32,12 @@ const ProfileDropdown = () => {
       </div>
       <ul className="py-2" aria-labelledby="user-menu-button">
         <li className="relative text-center">
-          <a
-            href="/signout"
+          <Link
+            to="/auth"
             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
           >
             Sign out
-          </a>
+          </Link>
         </li>
       </ul>
     </motion.div>
@@ -52,7 +53,7 @@ const NavbarDropdown = () => {
 
   return (
     <motion.div
-      className="z-10 absolute mt-2 left-0 bg-white divide-y divide-gray-100 shadow-sm shadow-gray-400 w-full dark:bg-[#C4E1F6]"
+      className="z-10 absolute mt-2 left-0 bg-white divide-y divide-gray-100 shadow-sm shadow-gray-400 w-full rounded-lg dark:bg-gray-700 dark:divide-gray-600"
       id="doubleDropdown"
       initial="hidden"
       animate="visible"
@@ -223,7 +224,8 @@ const Header = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isProfile, setIsProfile] = useState(false);
+  const [isProfileHovered, setIsProfileHovered] = useState(false); // State for hover
+  const [isProfileClicked, setIsProfileClicked] = useState(false); // State for click
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
 
@@ -231,7 +233,8 @@ const Header = () => {
     // Reset the menu states when the route changes
     setIsMobileMenuOpen(false);
     setIsDropdownOpen(false);
-    setIsProfile(false);
+    setIsProfileHovered(false); // Reset hover state
+    setIsProfileClicked(false); // Reset click state
     setIsMobileDropdownOpen(false);
   }, [location]); // Depend on location, so the effect runs on route change
 
@@ -252,8 +255,23 @@ const Header = () => {
     setIsMobileMenuOpen(false); // Close mobile menu when dropdown is opened
   };
 
-  const toggleProfile = () => {
-    setIsProfile(!isProfile);
+  const handleProfileMouseEnter = () => {
+    setIsProfileHovered(true);
+  };
+
+  const handleProfileMouseLeave = () => {
+    if (!isProfileClicked) {
+      setIsProfileHovered(false);
+    }
+  };
+
+  const toggleProfileDropdown = () => {
+    setIsProfileClicked(!isProfileClicked);
+    if (!isProfileClicked) {
+      setIsProfileHovered(true); // Keep it open if clicked
+    } else {
+      setIsProfileHovered(false); // Close if clicked again
+    }
   };
 
   const dropdownVariants = {
@@ -275,7 +293,7 @@ const Header = () => {
           <div className="relative hidden md:block">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
               <svg
-                className="w-4 h-4 text-gray-500 "
+                className="w-4 h-4 text-gray-600 "
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -293,7 +311,7 @@ const Header = () => {
             <input
               type="text"
               id="search-navbar"
-              className="block w-full p-2 ps-10 text-sm  border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="block w-full p-2 ps-10 text-sm  border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark: dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Search..."
               value={searchText}
               onChange={handleSearchChange}
@@ -303,12 +321,15 @@ const Header = () => {
             <Link to="tel:855888639316" className="text-sm  hover:underline">
               (855) 888-639-316
             </Link>
-            <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-              <button
-                type="button"
+            <div
+              className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse"
+              onMouseEnter={handleProfileMouseEnter}
+              onMouseLeave={handleProfileMouseLeave}
+            >
+              <Link
+                to="/profile"
                 className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                onClick={toggleProfile}
-                aria-expanded={toggleProfile ? "true" : "false"}
+                onClick={toggleProfileDropdown} // Toggle profile dropdown on click
               >
                 <span className="sr-only">Open user menu</span>
                 <img
@@ -316,10 +337,10 @@ const Header = () => {
                   src="/docs/images/people/profile-picture-3.jpg"
                   alt="user photo"
                 />
-              </button>
+              </Link>
 
               {/* User Dropdown */}
-              {isProfile && ProfileDropdown()}
+              {(isProfileHovered || isProfileClicked) && ProfileDropdown()}
             </div>
           </div>
         </div>
@@ -351,7 +372,7 @@ const Header = () => {
                 <button
                   onClick={toggleDropdown}
                   type="button"
-                  className="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="flex items-center  dark:text-white justify-between w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
                 >
                   Perfume
                   <svg

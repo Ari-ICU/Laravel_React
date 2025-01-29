@@ -3,6 +3,9 @@ import axios from "axios";
 
 const ReviewsContext = createContext();
 
+export const useReviews = () => {
+  return React.useContext(ReviewsContext);
+};
 const ReviewsProvider = ({ children }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);

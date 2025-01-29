@@ -1,7 +1,21 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useContact } from "../context/ContactContext"; // Import the custom hook
 
 const Contact = () => {
+  const {
+    name,
+    setName,
+    email,
+    setEmail,
+    message,
+    setMessage,
+    loading,
+    error,
+    success,
+    handleSubmit,
+  } = useContact();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 space-y-6">
       <motion.div
@@ -13,7 +27,7 @@ const Contact = () => {
         <h1 className="text-2xl font-bold mb-4 text-center">
           Get in touch with us here
         </h1>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Name
@@ -22,6 +36,8 @@ const Contact = () => {
               type="text"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div>
@@ -32,6 +48,8 @@ const Contact = () => {
               type="email"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="Your Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
@@ -42,14 +60,23 @@ const Contact = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               rows="4"
               placeholder="Your Message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             ></textarea>
           </div>
+          {error && <div className="text-red-500 text-sm">{error}</div>}
+          {success && (
+            <div className="text-green-500 text-sm">
+              Form submitted successfully!
+            </div>
+          )}
           <div>
             <button
               type="submit"
+              disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Send
+              {loading ? "Sending..." : "Send"}
             </button>
           </div>
         </form>
