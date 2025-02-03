@@ -15,7 +15,7 @@ export const ProductProvider = ({ children }) => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("https://fakestoreapi.com/products");
+      const response = await axios.get("http://127.0.0.1:8000/perfumes/");
       setProducts(response.data);
     } catch (error) {
       console.error("Failed to fetch products", error);

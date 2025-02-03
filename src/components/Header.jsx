@@ -3,9 +3,10 @@ import { useCategory } from "../context/CategoryContext";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logo.jpeg";
-import { FaShoppingCart, FaHeart, FaSearch } from "react-icons/fa";
+import { FaShoppingCart, FaHeart } from "react-icons/fa";
 import { FaUserAlt, FaSignInAlt } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import Search from "./Search";
 
 const ProfileDropdown = ({ user, signOut }) => {
   const dropdownVariants = {
@@ -213,13 +214,6 @@ const IconBtn = () => {
           </Link>
         </li>
       </ul>
-
-      <div className="absolute md:hidden  left-26 inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-        <FaSearch
-          className="w-4 h-4 text-gray-500 dark:text-gray-400"
-          aria-hidden="true"
-        />
-      </div>
     </div>
   );
 };
@@ -231,7 +225,6 @@ const Header = () => {
   const [isProfileHovered, setIsProfileHovered] = useState(false); // State for hover
   const [isProfileClicked, setIsProfileClicked] = useState(false); // State for click
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
 
   const { user, signOut } = useAuth();
 
@@ -243,10 +236,6 @@ const Header = () => {
     setIsProfileClicked(false); // Reset click state
     setIsMobileDropdownOpen(false);
   }, [location]); // Depend on location, so the effect runs on route change
-
-  const handleSearchChange = (event) => {
-    setSearchText(event.target.value);
-  };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -277,7 +266,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-[#8174A0] text-black shadow sticky top-0 z-100">
+    <header className="bg-[#AD9C8E] text-[#F7E6CA] shadow sticky top-0 z-100">
       <nav className=" border-gray-200 ">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
           <Link
@@ -287,33 +276,7 @@ const Header = () => {
             <img src={logo} className="h-8" alt="Perfume Logo" />
             <span className="sr-only">Perfume</span>
           </Link>
-          <div className="relative hidden md:block">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg
-                className="w-4 h-4 text-gray-600 "
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-            </div>
-            <input
-              type="text"
-              id="search-navbar"
-              className="block w-full p-2 ps-10 text-sm  border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark: dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search..."
-              value={searchText}
-              onChange={handleSearchChange}
-            />
-          </div>
+          <Search />
           <div className="flex items-center space-x-6 rtl:space-x-reverse">
             <Link to="tel:855888639316" className="text-sm  hover:underline">
               (855) 888-639-316

@@ -17,7 +17,7 @@ const Contact = () => {
   } = useContact();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 space-y-6">
+    <div className="flex flex-col items-center pt-6 justify-center min-h-screen text-black space-y-6">
       <motion.div
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}

@@ -10,23 +10,26 @@ import { WishlistProvider } from "./context/WishlistContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import { ProfileProvider } from "./context/ProfileContext.jsx";
 import { SignOutProvider } from "./context/AuthContext.jsx";
+import { SearchProvider } from "./context/SearchContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <SignOutProvider>
-      <ProfileProvider>
-        <ContactProvider>
-          <CarouselProvider>
-            <PartnerProvider>
-              <WishlistProvider>
-                <CartProvider>
-                  <App />
-                </CartProvider>
-              </WishlistProvider>
-            </PartnerProvider>
-          </CarouselProvider>
-        </ContactProvider>
-      </ProfileProvider>
+      <SearchProvider>
+        <ProfileProvider>
+          <ContactProvider>
+            <CarouselProvider>
+              <PartnerProvider>
+                <WishlistProvider>
+                  <CartProvider>
+                    <App />
+                  </CartProvider>
+                </WishlistProvider>
+              </PartnerProvider>
+            </CarouselProvider>
+          </ContactProvider>
+        </ProfileProvider>
+      </SearchProvider>
     </SignOutProvider>
   </StrictMode>
 );

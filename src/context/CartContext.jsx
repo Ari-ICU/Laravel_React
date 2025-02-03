@@ -71,9 +71,24 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const updateQuantity = async (itemId, quantity) => {
+    try {
+      const response = await axios.put(`/api/cart/${itemId}`, { quantity });
+      dispatch({ type: "SET_CART", payload: response.data });
+    } catch (error) {
+      console.error("Failed to update quantity", error);
+    }
+  };
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, loading, error }}
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        loading,
+        error,
+      }}
     >
       {children}
     </CartContext.Provider>

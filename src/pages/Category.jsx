@@ -3,25 +3,13 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useCategory } from "../context/CategoryContext";
 import { Link } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { useWishlist } from "../context/WishlistContext";
 import { useParams } from "react-router-dom";
+import ButtonCart from "../components/ButtonCart";
+import ButtonWishlist from "../components/ButtonWishlist";
 
 const Category = () => {
   const { categoryName } = useParams();
   const { products, loading, error } = useCategory();
-  const { addToCart } = useCart();
-  const { addToWishlist } = useWishlist();
-
-  // Handle Add to Cart functionality
-  const handleAddToCart = (product) => {
-    addToCart(product);
-  };
-
-  //Handle Add to cart
-  const handleAddWishlist = (product) => {
-    addToWishlist(product);
-  };
 
   if (loading) {
     return (
@@ -39,7 +27,7 @@ const Category = () => {
   if (error) {
     return (
       <motion.p
-        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4 p-4"
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4 "
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -94,18 +82,8 @@ const Category = () => {
                 reviews)
               </p>
               <div className="flex justify-between items-center">
-                <button
-                  onClick={() => handleAddWishlist(product)}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
-                >
-                  Wishlist
-                </button>
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
-                >
-                  Add to Cart
-                </button>
+                <ButtonWishlist product={product} />
+                <ButtonCart product={product} />
               </div>
             </div>
           ))

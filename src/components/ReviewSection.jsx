@@ -66,7 +66,7 @@ const ReviewSection = () => {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-2xl font-bold text-center text-white uppercase  mb-6"
+        className="text-2xl font-bold text-center text-black uppercase  mb-6"
       >
         Customer Reviews
       </motion.h1>

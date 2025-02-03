@@ -12,7 +12,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="bg-gray-900 text-white h-screen flex items-center justify-center">
+    <section className=" text-black h-screen flex items-center justify-center">
       <div className="container mx-auto px-6 gap-10 grid grid-cols-1 lg:grid-cols-2 items-center">
         {/* Text Content */}
         <motion.div

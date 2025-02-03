@@ -16,7 +16,6 @@ const WishlistProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch the initial wishlist from the API when the component mounts
     fetch("/api/wishlist")
       .then((response) => response.json())
       .then((data) => setWishlist(data))

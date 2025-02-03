@@ -2,31 +2,19 @@ import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useProduct } from "../context/ProductContext";
 import { Link } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { useWishlist } from "../context/WishlistContext";
+import ButtonCart from "../components/ButtonCart";
+import ButtonWishlist from "../components/ButtonWishlist";
 
 const Product = () => {
   const { fetchProducts, products } = useProduct();
-  const { addToCart } = useCart();
-  const { addToWishlist } = useWishlist();
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // Handle Add to Cart functionality
-  const handleAddToCart = (product) => {
-    addToCart(product);
-  };
-
-  //Handle Add to cart
-  const handleAddWishlist = (product) => {
-    addToWishlist(product);
-  };
-
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl text-white font-bold mb-4">Products</h1>
+      <h1 className="text-2xl text-black font-bold mb-4">Products</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center ">
         {products.map((product, index) => (
@@ -62,18 +50,8 @@ const Product = () => {
               Rating: {product.rating?.rate} ★ ({product.rating?.count} reviews)
             </p>
             <div className="flex justify-between items-center">
-              <button
-                onClick={() => handleAddWishlist(product)}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
-              >
-                Wishlist
-              </button>
-              <button
-                onClick={() => handleAddToCart(product)}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
-              >
-                Add to Cart
-              </button>
+              <ButtonWishlist product={product} />
+              <ButtonCart product={product} />
             </div>
           </motion.div>
         ))}

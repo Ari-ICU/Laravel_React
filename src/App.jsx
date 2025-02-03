@@ -20,6 +20,7 @@ import Wishlist from "./pages/Wishlist";
 import UserProfile from "./pages/UserProfile";
 import AuthPage from "./pages/Auth";
 import SignUpPage from "./pages/SignUp";
+import CheckoutPage from "./pages/CheckOut";
 
 function App() {
   return (
@@ -101,7 +102,14 @@ function App() {
                   </Layout>
                 }
               />
-
+              <Route
+                path="/checkout"
+                element={
+                  <Layout>
+                    <CheckoutPage />
+                  </Layout>
+                }
+              />
               <Route
                 path="/profile"
                 element={

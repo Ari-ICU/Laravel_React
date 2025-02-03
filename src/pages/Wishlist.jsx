@@ -8,7 +8,7 @@ const WishlistPage = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
 
   return (
-    <div className="container text-white mx-auto p-4">
+    <div className="container text-black mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Wishlist</h1>
 
       {/* Wishlist Display */}

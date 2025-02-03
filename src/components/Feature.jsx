@@ -1,14 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useProduct } from "../context/ProductContext";
-import { useCart } from "../context/CartContext"; // Import useCart hook
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useWishlist } from "../context/WishlistContext";
+import ButtonWishlist from "./ButtonWishlist";
+import ButtonCart from "./ButtonCart";
 
 const Feature = () => {
   const { products, fetchProducts } = useProduct();
-  const { addToCart } = useCart();
-  const { addToWishlist } = useWishlist();
 
   fetchProducts();
 
@@ -25,17 +23,6 @@ const Feature = () => {
     );
   }
 
-  // Handle Add to Cart functionality
-  const handleAddToCart = (product) => {
-    addToCart(product);
-  };
-
-  //Handle Add to cart
-  const handleAddWishlist = (product) => {
-    addToWishlist(product);
-  };
-
-  console.log(handleAddToCart, handleAddToCart);
   return (
     <motion.div
       className="container mx-auto px-4 py-8"
@@ -43,11 +30,11 @@ const Feature = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-2xl font-bold text-center text-white uppercase mb-6">
+      <h1 className="text-2xl font-bold text-center text-black uppercase mb-6">
         Product Features
       </h1>
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2 justify-center"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-2 justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -55,7 +42,7 @@ const Feature = () => {
         {products.slice(4, 10).map((product, index) => (
           <motion.div
             key={product.id}
-            className="p-6 max-w-sm bg-white justify-center rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 space-y-4"
+            className="p-6 max-w-sm bg-[#FAF3E0] text-white justify-center rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 space-y-4"
             initial={{ opacity: 0.4, y: -30, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
             transition={{ delay: index * 0.2 }}
@@ -85,18 +72,8 @@ const Feature = () => {
               Rating: {product.rating?.rate} ★ ({product.rating?.count} reviews)
             </p>
             <div className="flex justify-between items-center">
-              <button
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
-                onClick={() => handleAddToCart(product)}
-              >
-                Add to Cart
-              </button>
-              <button
-                onClick={() => handleAddWishlist(product)} // Add product to cart when clicked
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
-              >
-                Wishlist
-              </button>
+              <ButtonCart product={product} />
+              <ButtonWishlist product={product} />
             </div>
           </motion.div>
         ))}

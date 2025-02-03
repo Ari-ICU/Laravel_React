@@ -27,7 +27,7 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+    <div className="flex items-center justify-center min-h-full py-10 px-2">
       <motion.div
         className="max-w-sm w-full bg-white p-6 rounded-lg shadow-lg"
         initial={{ opacity: 0 }}

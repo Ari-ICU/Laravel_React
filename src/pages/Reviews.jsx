@@ -27,8 +27,8 @@ const Reviews = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 ">
-      <h1 className="text-2xl text-center text-white font-bold mb-4">
+    <div className="container mx-auto p-4  ">
+      <h1 className="text-2xl text-center text-black font-bold mb-4">
         Reviews
       </h1>
       <div className=" grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex justify-center  ">
@@ -61,7 +61,7 @@ const Reviews = () => {
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-2xl font-bold text-white text-center mb-4"
+          className="text-2xl font-bold text-black text-center mb-4"
         >
           Share Your Experience
         </motion.h1>

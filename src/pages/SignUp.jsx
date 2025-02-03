@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import SocialLogin from "../components/SocialLogin";
 
 const SignUpPage = () => {
-  const { signIn } = useAuth();
+  const { signUp } = useAuth();
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -27,7 +27,7 @@ const SignUpPage = () => {
 
     try {
       // Simulate a sign-up process
-      await signIn(credentials); // You might want to replace this with a sign-up function
+      await signUp(credentials); // You might want to replace this with a sign-up function
     } catch (err) {
       setError("Error during sign-up");
     } finally {
@@ -36,7 +36,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+    <div className="flex items-center justify-center min-h-full py-10 px-2">
       <motion.div
         className="max-w-xl w-full bg-white p-6 rounded-lg shadow-lg"
         initial={{ opacity: 0 }}
@@ -55,6 +55,21 @@ const SignUpPage = () => {
             className="mt-6 space-y-4 space-x-5 mx-auto w-full max-w-sm"
           >
             <div>
+              <label className="block text-left text-sm font-semibold text-gray-600">
+                Username
+              </label>
+              <input
+                type="text"
+                value={credentials.username}
+                onChange={(e) =>
+                  setCredentials({ ...credentials, username: e.target.value })
+                }
+                className="w-full p-3 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+                autoFocus
+                placeholder="Enter your username"
+                aria-label="Username"
+              />
               <label className="block text-left text-sm font-semibold text-gray-600">
                 Email
               </label>
