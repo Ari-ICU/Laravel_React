@@ -8,11 +8,12 @@ export const PartnerProvider = ({ children }) => {
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
   // Fetch partners from the API
   const fetchPartners = async () => {
     try {
-      const response = await fetch("https://api.example.com/partners");
+      const response = await fetch(`${API_BASE_URL}/partner`);
       if (!response.ok) {
         throw new Error("Failed to fetch partners");
       }
@@ -25,7 +26,6 @@ export const PartnerProvider = ({ children }) => {
     }
   };
 
-  // Fetch partners when the component mounts
   useEffect(() => {
     fetchPartners();
   }, []);

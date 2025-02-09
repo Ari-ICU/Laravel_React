@@ -9,12 +9,12 @@ import { ContactProvider } from "./context/ContactContext.jsx";
 import { WishlistProvider } from "./context/WishlistContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import { ProfileProvider } from "./context/ProfileContext.jsx";
-import { SignOutProvider } from "./context/AuthContext.jsx";
 import { SearchProvider } from "./context/SearchContext.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <SignOutProvider>
+    <AuthProvider>
       <SearchProvider>
         <ProfileProvider>
           <ContactProvider>
@@ -30,6 +30,6 @@ createRoot(document.getElementById("root")).render(
           </ContactProvider>
         </ProfileProvider>
       </SearchProvider>
-    </SignOutProvider>
+    </AuthProvider>
   </StrictMode>
 );

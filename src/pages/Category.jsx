@@ -1,96 +1,65 @@
-// Category.js
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect } from "react";
 import { useCategory } from "../context/CategoryContext";
-import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import ButtonCart from "../components/ButtonCart";
 import ButtonWishlist from "../components/ButtonWishlist";
 
-const Category = () => {
-  const { categoryName } = useParams();
-  const { products, loading, error } = useCategory();
+const CategoryPage = () => {
+  const { categoryName, products, changeCategory } = useCategory();
 
-  if (loading) {
-    return (
-      <motion.p
-        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4 p-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        Loading...
-      </motion.p>
-    );
-  }
-
-  if (error) {
-    return (
-      <motion.p
-        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4 "
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        Error: {error}
-      </motion.p>
-    );
-  }
+  useEffect(() => {
+    if (categoryName) {
+      changeCategory(categoryName);
+    }
+  }, []);
 
   return (
-    <div className="container mx-auto p-4">
-      <motion.h1
-        className="text-4xl text-white font-extrabold text-center mb-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        Category: {categoryName}
-      </motion.h1>
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {products.length === 0 ? (
-          <p>No products available in this category.</p>
-        ) : (
-          products.map((product) => (
-            <div key={product.id} className="bg-white p-4 rounded-lg shadow-md">
-              <Link to={`/product/${product.id}`}>
-                <img
-                  src={product.image}
-                  alt={`Product: ${product.title}`}
-                  className="w-full h-40 object-cover rounded-md"
-                />
-              </Link>
-              <Link to={`/product/${product.id}`}>
-                <h2 className="text-xl font-semibold">{product.title}</h2>
-              </Link>
-              <p className="text-gray-500 truncate">{product.description}</p>
-              <div className="flex justify-between items-center">
-                <p className="text-lg font-bold text-green-600">
-                  ${product.price.toFixed(2)}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Category: {product.category}
-                </p>
-              </div>
-              <p className="text-yellow-500">
-                Rating: {product.rating?.rate} ★ ({product.rating?.count}{" "}
-                reviews)
+    <div className="container mx-auto px-4 py-6">
+      {/* Category Title */}
+      <h1 className="text-2xl font-bold text-center text-black uppercase mb-6">
+        {categoryName} Perfumes
+      </h1>
+      {products.length === 0 && (
+        <div className="text-center">
+          <p className="text-gray-500">No products available.</p>
+        </div>
+      )}
+
+      {/* Product List */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+        {products.map((product) => (
+          <motion.div
+            key={product.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-lg shadow-lg py-2  p-4"
+          >
+            <img
+              src={product.image}
+              alt={product.title}
+              className="w-full h-64 object-cover rounded-md mb-4"
+            />
+            <h3 className="text-xl font-semibold mb-2">{product.title}</h3>
+            <p className="text-gray-500 truncate">{product.description}</p>
+            <div className="flex justify-between items-center">
+              <p className="text-lg font-bold text-green-600">
+                ${product.price.toFixed(2)}
               </p>
-              <div className="flex justify-between items-center">
-                <ButtonWishlist product={product} />
-                <ButtonCart product={product} />
-              </div>
+              <p className="text-sm text-gray-500">
+                Category: {product.category}
+              </p>
             </div>
-          ))
-        )}
-      </motion.div>
+            <p className="text-yellow-500">Rating: {product.rating} ★</p>
+            <div className="flex justify-between items-center">
+              <ButtonCart product={product} />
+              <ButtonWishlist product={product} />
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default Category;
+export default CategoryPage;

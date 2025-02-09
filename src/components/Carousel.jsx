@@ -46,12 +46,14 @@ const Carousel = () => {
   if (carousels.length === 0) {
     return (
       <motion.div
-        className=" max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-center text-red-500">No carousel available.</p>
+        <p className="text-center text-gray-500">
+          No carousel items available.
+        </p>
       </motion.div>
     );
   }
@@ -61,7 +63,7 @@ const Carousel = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
-      className="relative max-w-screen h-auto px-2 mx-auto z-10 bg-red-300"
+      className="relative max-w-screen h-auto px-2 mx-auto bg-red-300"
     >
       <motion.div
         key={currentIndex}
@@ -72,8 +74,8 @@ const Carousel = () => {
         className="w-full h-64"
       >
         <img
-          src={carousels[currentIndex].url}
-          alt="carousel"
+          src={carousels[currentIndex].image_url}
+          alt={carousels[currentIndex].name}
           className="w-full h-full object-cover rounded-lg"
         />
       </motion.div>

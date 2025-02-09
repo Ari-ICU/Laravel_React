@@ -78,9 +78,9 @@ const Footer = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
-      className="bg-[#AD9C8E] text-[#F7E6CA] py-8"
+      className="bg-[#AD9C8E]"
     >
-      <div className="container mx-auto px-4 ">
+      <div className="container mx-auto px-4  text-[#F7E6CA] py-8">
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 cursor-pointer"
           initial={{ opacity: 0 }}
@@ -173,6 +173,20 @@ const Footer = () => {
             {Social()}
           </div>
         </motion.div>
+      </div>
+      <div className="bg-[#654E27] text-[#F7E6CA] py-6 mt-10">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center flex-col space-y-2">
+            <p className="text-center text-sm md:text-base">
+              &copy; {new Date().getFullYear()} All Rights Reserved.
+            </p>
+            <p className="text-center text-xs md:text-sm italic">
+              Crafted with passion by{" "}
+              <span className="text-[#FFD700]">Thoeurn Ratha</span> and{" "}
+              <span className="text-[#FFD700]">Pheng Sokunnidsa</span>.
+            </p>
+          </div>
+        </div>
       </div>
     </motion.footer>
   );

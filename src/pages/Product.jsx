@@ -10,7 +10,7 @@ const Product = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+  }, []);
 
   return (
     <div className="container mx-auto p-4">

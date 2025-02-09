@@ -1,5 +1,5 @@
 // CategoryContext.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 const CategoryContext = createContext();
 
@@ -14,14 +14,16 @@ export const CategoryProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
   const fetchCategoryProducts = async (category) => {
     setLoading(true);
-    setError("");
     try {
       // Fetch products based on the category from the API
       const response = await fetch(
-        `http://localhost:4000/category/${category}`
+        `${API_BASE_URL}/perfume?category=${category}`
       );
+
       if (!response.ok) {
         throw new Error("Failed to fetch products");
       }

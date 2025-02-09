@@ -12,16 +12,19 @@ export const CarouselProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
   useEffect(() => {
     const fetchCarousels = async () => {
       try {
-        const response = await fetch("/api/carousels");
+        const response = await fetch(`${API_BASE_URL}/slider`);
         const data = await response.json();
-        setCarousels(data.carousels || []);
+        setCarousels(data || []);
         setLoading(false);
+        console.log("sliders loaded:", data);
       } catch (err) {
-        console.error("Error fetching carousels:", err);
-        setError("Failed to load carousels.");
+        console.error("Error fetching sliders:", err);
+        setError("Failed to load sliders.");
         setLoading(false);
       }
     };

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext"; // Assuming this is where your AuthContext is located
+import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 
 const AuthPage = () => {
@@ -9,7 +9,7 @@ const AuthPage = () => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous error messages
+    setError("");
 
     try {
       await signIn(credentials);

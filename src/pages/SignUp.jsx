@@ -6,12 +6,14 @@ import SocialLogin from "../components/SocialLogin";
 const SignUpPage = () => {
   const { signUp } = useAuth();
   const [credentials, setCredentials] = useState({
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -26,12 +28,18 @@ const SignUpPage = () => {
     }
 
     try {
-      // Simulate a sign-up process
-      await signUp(credentials); // You might want to replace this with a sign-up function
+      const result = await signUp({
+        ...credentials,
+        confirm_password: credentials.confirmPassword, // ✅ Send `confirm_password`
+      });
+
+      if (!result.success) {
+        setError(result.error);
+      }
     } catch (err) {
       setError("Error during sign-up");
     } finally {
-      setLoading(false); // End loading
+      setLoading(false);
     }
   };
 
@@ -66,7 +74,6 @@ const SignUpPage = () => {
                 }
                 className="w-full p-3 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
-                autoFocus
                 placeholder="Enter your username"
                 aria-label="Username"
               />
@@ -81,7 +88,6 @@ const SignUpPage = () => {
                 }
                 className="w-full p-3 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
-                autoFocus
                 placeholder="Enter your email"
                 aria-label="Email Address"
               />
@@ -142,7 +148,7 @@ const SignUpPage = () => {
           <div className="mt-6">
             <p className="text-sm text-gray-600">Or sign up with</p>
             <div className="flex space-x-6 mt-2 justify-center">
-              <SocialLogin /> {/* Use the SocialLogin component */}
+              <SocialLogin />
             </div>
           </div>
         </motion.div>
