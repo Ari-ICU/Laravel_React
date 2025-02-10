@@ -46,8 +46,7 @@ const WishlistProvider = ({ children }) => {
       console.log("Parsed data:", data);
 
       setWishlist((prevWishlist) => [...prevWishlist, data]);
-    } catch (error) {
-      console.error("Error adding to wishlist:", error);
+    } catch {
       setError("Failed to add item to wishlist");
     }
   };
@@ -58,7 +57,6 @@ const WishlistProvider = ({ children }) => {
     })
       .then(() => setWishlist(wishlist.filter((i) => i.id !== item.id)))
       .catch((error) => {
-        console.error("Error removing from wishlist:", error);
         setError("Failed to remove item from wishlist");
       });
   };

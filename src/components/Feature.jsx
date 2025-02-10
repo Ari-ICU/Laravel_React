@@ -10,7 +10,7 @@ const Feature = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, []); // ✅ Added dependency
+  }, []);
 
   if (!Array.isArray(products) || products.length === 0) {
     return (
@@ -50,14 +50,14 @@ const Feature = () => {
               animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
               transition={{ delay: index * 0.2 }}
             >
-              <Link to={`/product/${product.id}`}>
+              <Link to={`/product/${product.code}`}>
                 <img
                   src={product.image}
                   alt={`Product: ${product.title}`}
                   className="w-full h-40 object-cover rounded-md"
                 />
               </Link>
-              <Link to={`/product/${product.id}`}>
+              <Link to={`/product/${product.code}`}>
                 <h2 className="text-xl font-semibold text-gray-800 hover:underline">
                   {product.title}
                 </h2>
@@ -71,7 +71,15 @@ const Feature = () => {
                   Category: {product.category}
                 </p>
               </div>
-              <p className="text-yellow-500">Rating: {product.rating} ★</p>
+
+              {product.stock <= 0 ? (
+                <p className="text-red-500">Out of Stock</p>
+              ) : (
+                <p className="text-green-500">In Stock: {product.stock}</p>
+              )}
+              <p className="text-yellow-500">
+                Rating: {product.rating || "No rating"} ★
+              </p>
               <div className="flex justify-between items-center">
                 <ButtonCart product={product} />
                 <ButtonWishlist product={product} />

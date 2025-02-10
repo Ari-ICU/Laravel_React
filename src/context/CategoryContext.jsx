@@ -1,4 +1,3 @@
-// CategoryContext.jsx
 import React, { createContext, useContext, useState } from "react";
 
 const CategoryContext = createContext();
@@ -29,11 +28,7 @@ export const CategoryProvider = ({ children }) => {
       }
       const data = await response.json();
 
-      // Filter data by category to ensure it matches
-      const filteredProducts = data.filter(
-        (product) => product.category.toLowerCase() === category.toLowerCase()
-      );
-      setProducts(filteredProducts);
+      setProducts(data);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -48,7 +43,14 @@ export const CategoryProvider = ({ children }) => {
 
   return (
     <CategoryContext.Provider
-      value={{ categoryName, products, loading, error, changeCategory }}
+      value={{
+        categoryName,
+        products,
+        loading,
+        error,
+        changeCategory,
+        fetchCategoryProducts,
+      }}
     >
       {children}
     </CategoryContext.Provider>
