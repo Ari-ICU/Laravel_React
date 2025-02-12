@@ -5,7 +5,7 @@ import React from "react";
 const IconBtn = () => {
   return (
     <div className="relative">
-      <ul className="flex justify-between items-center space-x-8 rtl:space-x-reverse">
+      <ul className="flex justify-between items-center space-x-4 rtl:space-x-reverse">
         <li>
           <Link
             to="/cart"

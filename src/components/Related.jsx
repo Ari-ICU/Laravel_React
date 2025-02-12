@@ -48,12 +48,13 @@ const RelatedProducts = ({ category }) => {
     <div className="p-4 max-w-screen mx-auto">
       <h2 className="text-2xl font-bold mb-4">Related Products</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {relatedProducts.map((product) => (
+        {relatedProducts.map((product, index) => (
           <motion.div
             key={product.id}
-            className="bg-white p-4 rounded-lg shadow-md space-y-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="p-6 max-w-sm bg-[#FAF3E0] text-white justify-center rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 space-y-4"
+            initial={{ opacity: 0.4, y: -30, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
+            transition={{ delay: index * 0.2 }}
           >
             <Link to={`/product/${product.code}`}>
               <img
@@ -84,7 +85,7 @@ const RelatedProducts = ({ category }) => {
             <p className="text-yellow-500">
               Rating: {product.rating || "No rating"} ★
             </p>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap gap-4 justify-between items-center">
               <ButtonCart product={product} />
               <ButtonWishlist product={product} />
             </div>

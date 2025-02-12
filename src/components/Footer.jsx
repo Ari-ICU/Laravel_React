@@ -78,7 +78,7 @@ const Footer = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
-      className="bg-[#AD9C8E]"
+      className="bg-[#594608]"
     >
       <div className="container mx-auto px-4  text-[#F7E6CA] py-8">
         <motion.div

@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FaUserAlt, FaSignInAlt, FaBars, FaTimes } from "react-icons/fa";
+import {
+  FaUserAlt,
+  FaSignInAlt,
+  FaBars,
+  FaTimes,
+  FaSearch,
+} from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import { useCategory } from "../context/CategoryContext";
 import NavbarDropdown from "./NavbarDropdown";
@@ -15,10 +21,12 @@ const Header = () => {
   const { changeCategory } = useCategory();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsProfileDropdownOpen(false);
+    setIsSearchOpen(false);
   }, [location]);
 
   return (
@@ -56,8 +64,11 @@ const Header = () => {
           </li>
         </ul>
 
-        {/* Profile & Mobile Menu Button */}
+        {/* Profile, Search & Mobile Menu Button */}
         <div className="flex items-center space-x-4">
+          <button onClick={() => setIsSearchOpen(true)} className="text-white">
+            <FaSearch className="w-6 h-6" />
+          </button>
           <IconBtn />
           {user ? (
             <div
@@ -75,7 +86,6 @@ const Header = () => {
               <FaSignInAlt className="w-6 h-6" />
             </Link>
           )}
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden text-white focus:outline-none"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -139,6 +149,30 @@ const Header = () => {
               </Link>
             </li>
           </ul>
+        </motion.div>
+      )}
+
+      {/* Search Popup */}
+      {isSearchOpen && (
+        <motion.div
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <div className="bg-gray-500 p-4 rounded-lg shadow-lg w-96">
+            <button
+              onClick={() => setIsSearchOpen(false)}
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+            >
+              <FaTimes className="w-6 h-6" />
+            </button>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#AD9C8E]"
+            />
+          </div>
         </motion.div>
       )}
     </header>

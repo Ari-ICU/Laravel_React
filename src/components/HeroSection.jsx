@@ -1,19 +1,19 @@
 import React from "react";
 import { motion } from "framer-motion";
 import perfume from "../assets/perfume.png";
-import { useNavigate } from "react-router-dom"; // Use useNavigate instead of useLocation
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
-  const navigate = useNavigate(); // Initialize navigate function
+  const navigate = useNavigate();
 
   const handleBtnClick = () => {
-    navigate("/product"); // Use navigate to change route
+    navigate("/product");
     console.log("Shop Now");
   };
 
   return (
-    <section className=" text-black h-screen flex items-center justify-center">
-      <div className="container mx-auto px-6 gap-10 grid grid-cols-1 lg:grid-cols-2 items-center">
+    <section className="text-black h-screen flex items-center justify-center">
+      <div className="container mx-auto px-6 gap-10 grid grid-cols-1 sm:grid-cols-2 items-center">
         {/* Text Content */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
@@ -21,8 +21,10 @@ const HeroSection = () => {
           transition={{ duration: 1 }}
           className="w-full text-center lg:text-left order-2 lg:order-1"
         >
-          <h1 className="text-5xl font-bold mb-4">Welcome to Our Company</h1>
-          <p className="text-xl mb-8">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            Welcome to Our Company
+          </h1>
+          <p className="text-lg sm:text-xl mb-8">
             We provide the best solutions for your business needs.
           </p>
           <motion.button
