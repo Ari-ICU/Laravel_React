@@ -1,22 +1,23 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useCart } from "../context/CartContext"; // Correct import
-import { Link } from "react-router-dom"; // For navigation to checkout
+import { useCart } from "../context/CartContext";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity } = useCart(); // Correct hook
+  const { cartItems, removeFromCart, updateQuantity } = useCart();
 
-  // Calculate total price
   const totalPrice = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
 
   return (
-    <div className="container text-black mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
+    <div className="mt-12">
+      <h1 className="text-2xl font-bold bg-[rgba(236,206,152,0.48)] w-full p-4 mb-4 text-black">
+        Cart ({cartItems.length} item)
+      </h1>
       {cartItems.length === 0 ? (
-        <p>Your cart is empty</p>
+        <p className="text-black flex justify-center ">Your cart is empty</p>
       ) : (
         <motion.div
           initial={{ opacity: 0 }}
@@ -58,7 +59,7 @@ const Cart = () => {
           ))}
 
           <div className="mt-4 text-xl font-semibold">
-            <p>Total: ${totalPrice.toFixed(2)}</p>
+            <p>Subtotal: ${totalPrice.toFixed(2)}</p>
           </div>
 
           <Link to="/checkout">
