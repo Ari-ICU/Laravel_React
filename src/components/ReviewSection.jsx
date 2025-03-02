@@ -1,108 +1,69 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useReviews } from "../context/ReviewsContext";
+import { FaStar } from "react-icons/fa";
 
-const ReviewSection = () => {
+const ReviewSection = ({ productId }) => {
   const { reviews, loading, error } = useReviews();
+  const filteredReviews = reviews.filter((review) => review.productId === productId);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % reviews.length);
-  };
+  const placeholderImage = "https://via.placeholder.com/100?text=No+Image"; // Default image
 
-  const handlePrev = () => {
-    setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + reviews.length) % reviews.length
-    );
-  };
-
-  // Handle loading state
   if (loading) {
     return (
-      <motion.div
-        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
+      <div className="max-w-sm mx-auto mt-10 mb-10 rounded-xl shadow-lg space-y-4">
         <p className="text-center text-gray-500">Loading reviews...</p>
-      </motion.div>
+      </div>
     );
   }
 
-  // Handle error state
   if (error) {
     return (
-      <motion.div
-        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <p className="text-center text-red-500">
-          Failed to load reviews. Please try again.
-        </p>
-      </motion.div>
+      <div className="max-w-sm mx-auto mt-10 mb-10 rounded-xl shadow-lg space-y-4">
+        <p className="text-center text-red-500">Failed to load reviews. Please try again.</p>
+      </div>
     );
   }
 
-  // Handle empty reviews state
-  if (reviews.length === 0) {
+  if (filteredReviews.length === 0) {
     return (
-      <motion.div
-        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <p className="text-center text-gray-500">No reviews available.</p>
-      </motion.div>
+      <div className="max-w-sm mx-auto mt-10 mb-10 rounded-xl shadow-lg space-y-4">
+        <p className="text-center text-gray-500">No reviews available for this product.</p>
+      </div>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-screen px-4 py-8">
-      <motion.h1
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-2xl font-bold text-center text-black uppercase  mb-6"
-      >
-        Customer Reviews
-      </motion.h1>
-      <div className="relative max-w-7xl mx-auto h-auto">
-        <AnimatePresence>
-          <motion.div
-            key={currentIndex}
-            className="bg-white rounded-xl shadow-lg px-20 py-10"
-            initial={{ opacity: 0, x: 100, filter: "blur(10px)" }}
-            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, x: 100, filter: "blur(10px)" }}
-            transition={{ duration: 0.3 }}
-          >
-            <h3 className="text-lg font-semibold text-gray-800">
-              {reviews[currentIndex].name}
-            </h3>
-            <p className="text-gray-500">{reviews[currentIndex].body}</p>
-            <span className="block text-sm text-gray-400">
-              Email: {reviews[currentIndex].email}
-            </span>
-          </motion.div>
-        </AnimatePresence>
+    <div className="container mx-auto max-w-screen px-4 py-8 overflow-x-hidden">
+      <h1 className="text-2xl font-bold text-center uppercase mb-6">Customer Reviews</h1>
 
-        {/* Navigation Buttons */}
-        <button
-          onClick={handlePrev}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 px-4 rounded-full hover:bg-gray-700"
-        >
-          &#8592;
-        </button>
-        <button
-          onClick={handleNext}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 px-4 rounded-full hover:bg-gray-700"
-        >
-          &#8594;
-        </button>
+      <div className="relative max-w-2xl mx-auto h-auto overflow-x-hidden">
+        <div className="max-w-md w-full mx-auto rounded-xl shadow-lg px-6 py-6 flex flex-col items-center text-center">
+          {/* Display Product Image with Fix */}
+          <div className="w-24 h-24 mb-4">
+            <img
+              src={filteredReviews[currentIndex]?.image || placeholderImage}
+              alt="Review"
+              className="w-full h-full object-contain rounded-full"
+            />
+          </div>
+
+          {/* Reviewer's Name */}
+          <h3 className="text-lg font-semibold text-gray-800">{filteredReviews[currentIndex].name}</h3>
+
+          {/* Star Rating */}
+          <div className="flex justify-center mt-2">
+            {[...Array(5)].map((_, i) => (
+              <FaStar
+                key={i}
+                className={`text-xl ${i < filteredReviews[currentIndex].rating ? "text-yellow-500" : "text-gray-300"}`}
+              />
+            ))}
+          </div>
+
+          {/* Review Feedback */}
+          <p className="text-gray-600 mt-2">{filteredReviews[currentIndex].feedback}</p>
+        </div>
       </div>
     </div>
   );

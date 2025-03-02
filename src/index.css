@@ -1,1 +1,197 @@
 @import "tailwindcss";
+
+/* Tailwind Dark Mode Classes */
+@layer base {
+  /* Light Mode Styles */
+  body {
+    background: linear-gradient(
+      to right,
+      #f4f4f9,
+      /* Soft light gray for the background */ #d1d8e0,
+      /* Muted light gray for sections */ #e2e8f0
+        /* Slightly darker gray for subtle depth */
+    );
+    color: #333333; /* Dark gray for text */
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  /* Dark Mode Body Gradient */
+  body.dark {
+    background: linear-gradient(
+      to right,
+      #121212,
+      /* Deep dark gray for background */ #1e1e1e,
+      /* Slightly lighter dark gray for sections */ #2a2a2a
+        /* Darker tone for depth */
+    );
+    color: #eaeaea; /* Light gray for text in dark mode */
+  }
+
+  /* Custom background for elements when dark mode is active */
+  .dark .bg-[#AD9C8E] {
+    background-color: #2a2a2a; /* Dark background for these elements */
+  }
+
+  .dark .text-[#F7E6CA] {
+    color: #eaeaea; /* Light gray text for dark mode */
+  }
+
+  header {
+    background: linear-gradient(
+      to right,
+      #6a4e23,
+      /* Warm brown tone for the light mode header */ #9b7c4f,
+      /* Slightly darker brown for depth */ #d4b88c
+        /* Light tan gradient for a smooth finish */
+    );
+    color: #333333; /* Dark text for light mode */
+    text-align: center;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  /* Dark Mode Header Styles */
+  body.dark header {
+    background: linear-gradient(
+      to right,
+      #5f4b3c,
+      /* Dark brown for a sleek dark mode header */ #402e1d,
+      /* Deep rich brown for depth */ #8b6d4d
+        /* Darker brown to complement dark mode design */
+    );
+    color: #eaeaea; /* Light gray text for dark mode */
+    text-align: center;
+  }
+
+  /* Light Mode Footer Styles */
+  footer {
+    background: linear-gradient(
+      to right,
+      #404040,
+      /* Neutral dark gray for light mode footer */ #69685c,
+      /* Muted gray for footer depth */ #4c4c38
+        /* Darker shade for subtle depth */
+    );
+    color: #333333; /* Dark text for light mode */
+    padding: 20px;
+    text-align: center;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  /* Dark Mode Footer Styles */
+  body.dark footer {
+    background: linear-gradient(
+      to right,
+      #2f3332,
+      /* Deep, dark gradient for footer */ #4d4137,
+      /* Rich, earthy tone for dark mode footer */ #383e4c
+        /* Dark charcoal gray for added depth */
+    );
+    color: #eaeaea; /* Light gray text for dark mode footer */
+    padding: 20px;
+    text-align: center;
+  }
+
+  /* Light Mode Text in Header */
+  header h1,
+  header h2,
+  header h3,
+  header h4,
+  header h5,
+  header h6 {
+    color: #333333; /* Dark text for headers in light mode */
+  }
+
+  /* Dark Mode Text in Header */
+  body.dark header h1,
+  body.dark header h2,
+  body.dark header h3,
+  body.dark header h4,
+  body.dark header h5,
+  body.dark header h6 {
+    color: #eaeaea; /* Light text for headers in dark mode */
+  }
+
+  /* Light Mode Text in Footer */
+  footer p {
+    color: #333333; /* Dark text for paragraphs in light mode footer */
+  }
+
+  /* Dark Mode Text in Footer */
+  body.dark footer p {
+    color: #eaeaea; /* Light text for paragraphs in dark mode footer */
+  }
+
+  /* Headings in Light Mode */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #333333; /* Dark text for headings in light mode */
+  }
+
+  /* Headings in Dark Mode */
+  body.dark h1,
+  body.dark h2,
+  body.dark h3,
+  body.dark h4,
+  body.dark h5,
+  body.dark h6 {
+    color: #eaeaea; /* Light gray text for headings in dark mode */
+  }
+
+  /* Paragraphs in Light Mode */
+  p {
+    color: #333333; /* Dark text for paragraphs in light mode */
+  }
+
+  /* Paragraphs in Dark Mode */
+  body.dark p {
+    color: #eaeaea; /* Light gray text for paragraphs in dark mode */
+  }
+
+  /* Carousel Styles with Gradient Background */
+  .carousel {
+    background: linear-gradient(
+      to right,
+      #f7e6ca,
+      /* Soft warm gradient for light mode */ #ad9c8e
+        /* Subtle brownish tint for depth */
+    );
+    color: #333333; /* Dark gray text for carousel in light mode */
+    transition: background-color 0.3s ease, background 0.3s ease;
+  }
+
+  body.dark .carousel {
+    background: linear-gradient(
+      to right,
+      #444444,
+      /* Darker gradient for carousel in dark mode */ #333333
+        /* Deep gray for dark mode background */
+    );
+    color: #ffffff; /* White text for carousel in dark mode */
+  }
+
+  /* Discount Section Styles with Gradient Background */
+  .discount-section {
+    background: linear-gradient(
+      to right,
+      #ad9c8e,
+      /* Soft light gradient for discount section */ #f7e6ca
+        /* Warm gradient tone for section */
+    );
+    color: #333333; /* Dark text for discount section in light mode */
+    padding: 20px;
+    text-align: center;
+  }
+
+  body.dark .discount-section {
+    background: linear-gradient(
+      to right,
+      #333333,
+      /* Dark gradient for discount section */ #474444 /* Deep warm gray */
+    );
+    color: #eaeaea; /* Light gray text for dark mode */
+  }
+}

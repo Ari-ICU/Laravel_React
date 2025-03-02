@@ -1,68 +1,103 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import React, { createContext, useState, useEffect, useCallback, useContext } from "react";
 
 const CategoryContext = createContext();
 
-export const useCategory = () => {
-  return useContext(CategoryContext);
-};
+export const useCategory = () => useContext(CategoryContext);
 
 export const CategoryProvider = ({ children }) => {
-  const [categoryName, setCategoryName] = useState(null);
+  const [filters, setFilters] = useState({
+    gender: null,
+    brand: null,
+    origin: null,
+    personality: null,
+  });
+
+  const [filterOptions, setFilterOptions] = useState({
+    gender: [],
+    brand: [],
+    origin: [],
+    personality: [],
+  });
+
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const API_BASE_URL = "http://127.0.0.1:8000"; // Ensure this is the correct API URL
-
-  // Fetch category products
-  const fetchCategoryProducts = async (category) => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/perfume/?category=${category}`
-      );
-      const data = await response.json();
-
-      if (response.ok) {
-        setProducts(data);
-      } else {
-        setError(data.message || "Error fetching products");
-        setProducts([]); // Clear products if there was an error
+  // Build the URL based on filters; only include truthy parameters.
+  const buildUrl = () => {
+    const baseUrl = "http://127.0.0.1:8000/api/perfumes/";
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        params.append(`${key}_id`, value); // Send the filter as '_id'
       }
-    } catch (error) {
-      setError("Error fetching products");
-      setProducts([]); // Clear products if the API call fails
+    });
+    return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+  };
+
+  // Memoize the fetch function so its identity is stable.
+  const fetchCategoryProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const url = buildUrl();
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setProducts(data);  // Set products response
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
-  // Handle category change (either from UI or route)
-  const changeCategory = (category) => {
-    setCategoryName(category);
-  };
-
-  // Effect to fetch products when the category changes
+  // Fetch filters from API and set them in the state
   useEffect(() => {
-    if (categoryName) {
-      fetchCategoryProducts(categoryName);
+    const fetchFilters = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/perfume-filters");
+        const data = await response.json();
+        if (data.filters) {
+          setFilterOptions(data.filters);  // Set the filter options from API
+        }
+      } catch (err) {
+        setError("Error fetching filters");
+      }
+    };
+
+    fetchFilters();
+  }, []);
+
+  // Fetch products when filters change.
+  useEffect(() => {
+    if (filters.gender || filters.brand || filters.origin || filters.personality) {
+      fetchCategoryProducts(); // Fetch only if filters are set
     }
-  }, [categoryName]); // Re-run when categoryName changes
+  }, [filters, fetchCategoryProducts]);
+
+  // Expose a function to change filters.
+  const changeFilter = useCallback((filterName, value) => {
+    setFilters((prev) => ({ ...prev, [filterName]: value }));
+  }, []);
 
   return (
     <CategoryContext.Provider
       value={{
-        categoryName,
+        filters,
+        filterOptions,
         products,
-        setProducts,
         loading,
         error,
-        changeCategory,
-        fetchCategoryProducts,
+        changeFilter, // Pass down the changeFilter function
+        fetchCategoryProducts, // Available for manual refresh if needed
       }}
     >
       {children}
     </CategoryContext.Provider>
   );
 };
+
+export default CategoryProvider;

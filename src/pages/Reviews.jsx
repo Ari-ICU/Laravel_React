@@ -1,137 +1,65 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { useReviews } from "../context/ReviewsContext";
 import { FaStar } from "react-icons/fa";
 
-const Reviews = () => {
-  const { reviews, addReviews } = useReviews();
-  const [formData, setFormData] = useState({
-    name: "",
-    title: "",
-    review: "",
-    rating: 0,
-  });
+const ReviewSection = ({ productId }) => {
+  const { reviews, loading, error } = useReviews();
+  const filteredReviews = reviews.filter((review) => review.productId === productId);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const baseURL = "http://localhost:8000";
+  const placeholderImage = "https://via.placeholder.com/100?text=No+Image";
 
-  const handleStarClick = (rating) => {
-    setFormData({ ...formData, rating });
-  };
+  console.log("Reviews Data:", filteredReviews);
+  console.log("productID ",productId)
+  console.log(
+    "Image URL:",
+    filteredReviews[currentIndex]?.image
+      ? `${baseURL}/${filteredReviews[currentIndex].image.replace(/^\/?/, "")}`
+      : placeholderImage
+  );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    addReviews(formData);
-    setFormData({ name: "", title: "", review: "", rating: 0 });
-  };
+
+  if (loading) return <p className="text-center text-gray-500">Loading reviews...</p>;
+  if (error) return <p className="text-center text-red-500">Failed to load reviews.</p>;
+  if (filteredReviews.length === 0) return <p className="text-center text-gray-500">No reviews available.</p>;
 
   return (
-    <div className="container mx-auto p-4  ">
-      <h1 className="text-2xl text-center text-black font-bold mb-4">
-        Reviews
-      </h1>
-      <div className=" grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex justify-center  ">
-        {Array.isArray(reviews) && reviews.length > 0 ? (
-          reviews.map((review, index) => (
-            <motion.div
-              key={index}
-              className="bg-white p-4 rounded-lg shadow-md"
-            >
-              <h2 className="text-xl font-semibold">{review.title}</h2>
-              <p className="text-gray-600">{review.body}</p>
-              <p className="text-gray-500 text-sm">- {review.author}</p>
-            </motion.div>
-          ))
-        ) : (
-          <motion.div
-            className="mx-auto max-w-full flex justify-center mt-4 mb-10 bg-white rounded-xl shadow-lg space-y-4 p-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <p className="text-center px-2 text-red-500">
-              No reviews available.
-            </p>
-          </motion.div>
-        )}
-      </div>
-      <div className="max-w-xl mx-auto p-6">
-        <motion.h1
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl font-bold text-black text-center mb-4"
-        >
-          Share Your Experience
-        </motion.h1>
-        <motion.form
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          onSubmit={handleSubmit}
-          className="bg-white p-6 max-w-xl mx-auto rounded-lg shadow-lg"
-        >
-          <div className="mb-4">
-            <label className="block text-gray-700">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-lg"
-              required
+    <div className="container mx-auto max-w-screen px-4 py-8 overflow-x-hidden">
+      <h1 className="text-2xl font-bold text-center uppercase mb-6">Customer Reviews</h1>
+
+      <div className="relative max-w-2xl mx-auto h-auto overflow-x-hidden">
+        <div className="max-w-md w-full mx-auto rounded-xl shadow-lg px-6 py-6 flex flex-col items-center text-center">
+          {/* Image */}
+          <div className="w-24 h-24 mb-4">
+            <img
+              src={filteredReviews[currentIndex]?.image
+                ? `${baseURL}/${filteredReviews[currentIndex].image.replace(/^\/?/, "")}`
+                : placeholderImage}
+              alt="Review"
+              className="w-full h-full object-contain rounded-full"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Review Title</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-lg"
-              required
-            />
+
+          {/* Reviewer's Name */}
+          <h3 className="text-lg font-semibold text-gray-800">{filteredReviews[currentIndex].name}</h3>
+
+          {/* Star Rating */}
+          <div className="flex justify-center mt-2">
+            {[...Array(5)].map((_, i) => (
+              <FaStar
+                key={i}
+                className={`text-xl ${i < filteredReviews[currentIndex].rating ? "text-yellow-500" : "text-gray-300"}`}
+              />
+            ))}
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Comments</label>
-            <textarea
-              name="review"
-              value={formData.review}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-lg"
-              required
-            ></textarea>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Rating</label>
-            <div className="flex">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <FaStar
-                  key={star}
-                  size={24}
-                  className={`cursor-pointer ${
-                    star <= formData.rating
-                      ? "text-yellow-500"
-                      : "text-gray-300"
-                  }`}
-                  onClick={() => handleStarClick(star)}
-                />
-              ))}
-            </div>
-          </div>
-          <motion.button
-            type="submit"
-            whileHover={{ scale: 1.05 }}
-            className="w-full bg-blue-500 text-white py-2 rounded-lg"
-          >
-            Submit Review
-          </motion.button>
-        </motion.form>
+
+          {/* Review Feedback */}
+          <p className="text-gray-600 mt-2">{filteredReviews[currentIndex].feedback}</p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Reviews;
+export default ReviewSection;

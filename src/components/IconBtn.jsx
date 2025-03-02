@@ -9,7 +9,7 @@ const IconBtn = () => {
         <li>
           <Link
             to="/wishlist"
-            className="text-gray-900 dark:text-white hover:underline"
+            className=" dark:text-white hover:underline"
           >
             <FaHeart className="w-6 h-6" />
             <span className="sr-only">Wishlist</span>

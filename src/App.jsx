@@ -9,7 +9,6 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Reviews from "./pages/Reviews";
 import NotFound from "./pages/NotFound";
-import Category from "./pages/Category";
 import Contact from "./pages/Contact";
 import SingleProduct from "./pages/SingleProduct";
 import Product from "./pages/Product";
@@ -18,9 +17,10 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Cart from "./pages/Cart";
 import Wishlist from "./pages/Wishlist";
 import UserProfile from "./pages/UserProfile";
-import AuthPage from "./pages/Auth";
+import Signin from "./pages/Signin";
 import SignUpPage from "./pages/SignUp";
 import CheckoutPage from "./pages/CheckOut";
+import OrderSuccessPage from "./pages/OrderSucces";
 
 function App() {
   return (
@@ -62,7 +62,7 @@ function App() {
                 }
               />
               <Route
-                path="/product"
+                path="/products"
                 element={
                   <Layout>
                     <Product />
@@ -70,21 +70,14 @@ function App() {
                 }
               />
               <Route
-                path="/product/:perfumeCode"
+                path="/product/:id"
                 element={
                   <Layout>
                     <SingleProduct />
                   </Layout>
                 }
               />
-              <Route
-                path="/category/:categoryName"
-                element={
-                  <Layout>
-                    <Category />
-                  </Layout>
-                }
-              />
+             
               <Route
                 path="/cart"
                 element={
@@ -109,6 +102,15 @@ function App() {
                   </Layout>
                 }
               />
+               <Route
+                path="/order-success"
+                element={
+                  <Layout>
+                    <OrderSuccessPage />
+                  </Layout>
+                }
+              />
+              
               <Route
                 path="/profile"
                 element={
@@ -121,7 +123,7 @@ function App() {
                 path="/auth"
                 element={
                   <Layout>
-                    <AuthPage />
+                    <Signin />
                   </Layout>
                 }
               />

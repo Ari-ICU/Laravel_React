@@ -32,7 +32,7 @@ const Feature = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-2xl font-bold text-center text-black uppercase mb-6">
+      <h1 className="text-2xl font-bold text-center uppercase mb-6">
         Product Features
       </h1>
       <motion.div
@@ -41,53 +41,53 @@ const Feature = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        {products.slice(0, 6).map((product, index) => (
-          <motion.div
-            key={product.id}
-            className="p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition duration-300 space-y-4"
-            initial={{ opacity: 0.4, y: -20, filter: "blur(5px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Link to={`/product/${product.code}`}>
-              <img
-                src={product.image}
-                alt={`Product: ${product.title}`}
-                className="w-full h-40 object-cover rounded-md"
-              />
-            </Link>
-            <Link to={`/product/${product.code}`}>
-              <h2 className="text-lg font-semibold text-gray-900 hover:underline">
-                {product.title}
-              </h2>
-            </Link>
-            <p className="text-gray-600 text-sm line-clamp-2">
-              {product.description}
-            </p>
-            <div className="flex justify-between items-center">
-              <p className="text-lg font-bold text-green-600">
-                ${product.price.toFixed(2)}
-              </p>
-              <p className="text-xs text-gray-500">
-                Category: {product.category}
-              </p>
-            </div>
-            <p
-              className={product.stock <= 0 ? "text-red-500" : "text-green-500"}
+        {products.slice(0, 6).map((product, index) => {
+
+          return (
+            <motion.div
+              key={product.id}
+              className="p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 space-y-4"
+              initial={{ opacity: 0.4, y: -20, filter: "blur(5px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
+              transition={{ delay: index * 0.1 }}
             >
-              {product.stock > 0
-                ? `In Stock: ${product.stock}`
-                : "Out of Stock"}
-            </p>
-            <p className="text-yellow-500 text-sm">
-              Rating: {product.rating || "No rating"} ★
-            </p>
-            <div className="flex flex-wrap gap-2 justify-between items-center">
-              <ButtonCart product={product} />
-              <ButtonWishlist product={product} />
-            </div>
-          </motion.div>
-        ))}
+              <Link to={`/product/${product.id}`}>
+                <img
+                  src={`http://localhost:8000${product.images}`}
+                  alt={`Product: ${product.title}`}
+                  className="w-full h-40 object-cover rounded-md"
+                />
+              </Link>
+              <Link to={`/product/${product.id}`}>
+                <h2 className="text-lg font-semibold text-gray-900 hover:underline">
+                  {product.title}
+                </h2>
+              </Link>
+              <p className="text-gray-600 text-sm line-clamp-2">
+                {product.description}
+              </p>
+              <div className="flex justify-between items-center">
+                <p className="text-lg font-bold text-green-600">
+                  ${Number(product.price).toFixed(2)}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Category: {product.category || "Uncategorized"}
+                </p>
+              </div>
+              <p className={product.stock <= 0 ? "text-red-500" : "text-green-500"}>
+                {product.stock > 0 ? `In Stock: ${product.stock}` : "Out of Stock"}
+              </p>
+              <p className="text-yellow-500 text-sm">
+                Rating: {product.rating || "No rating"} ★
+              </p>
+              <div className="flex flex-wrap gap-2 justify-between items-center">
+                <ButtonCart product={product} /> {/* Pass product here */}
+                <ButtonWishlist product={product} />
+              </div>
+            </motion.div>
+          );
+        })}
+
       </motion.div>
     </motion.div>
   );

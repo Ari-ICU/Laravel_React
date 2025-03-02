@@ -1,24 +1,34 @@
-import { motion } from "framer-motion";
 import React from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ProfileDropdown = ({ user }) => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const result = await signOut();
+    if (result.success) {
+      navigate("/auth");
+    } else {
+      console.error("Logout failed:", result.error);
+    }
+  };
+
   return (
-    <motion.div
-      className="absolute top-8 right-10 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="px-4 py-3">
-        <span className="block text-sm text-gray-900 dark:text-white">
-          {user?.username}
-        </span>
-        <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
-          {user?.email}
-        </span>
+    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-2 z-50">
+      <div className="px-4 py-2 text-gray-700 dark:text-gray-300">
+        {user.name} <br />
+        <span className="text-xs">{user.email}</span>
       </div>
-    </motion.div>
+      <hr className="my-2 border-gray-200 dark:border-gray-700" />
+      <button
+        onClick={handleLogout}
+        className="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      >
+        Logout
+      </button>
+    </div>
   );
 };
 

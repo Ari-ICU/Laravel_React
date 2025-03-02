@@ -1,55 +1,28 @@
-import { motion } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
 import React, { useState, useRef, useEffect } from "react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Import Chevron Icons
+import { motion } from "framer-motion";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { useCategory } from "../context/CategoryContext"; // Import the hook to consume context
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
-const NavbarDropdown = ({ changeCategory }) => {
+const NavbarDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(null); // Track the active category
-  const dropdownRef = useRef(null); // Ref to the dropdown content
-  const location = useLocation(); // Get the current location
+  const [activeFilter, setActiveFilter] = useState(null);
+  const dropdownRef = useRef(null);
 
-  const categories = [
-    {
-      title: "Gender",
-      links: [
-        { label: "Women", path: "/category/womens", category: "womens" },
-        { label: "Men", path: "/category/mens", category: "mens" },
-      ],
-    },
-    {
-      title: "Personality",
-      links: [
-        { label: "Romantic", path: "/category/romantic", category: "romantic" },
-        { label: "Fresh", path: "/category/fresh", category: "fresh" },
-      ],
-    },
-    {
-      title: "Brand",
-      links: [
-        { label: "Dior", path: "/category/dior", category: "dior" },
-        { label: "Channel", path: "/category/channel", category: "channel" },
-      ],
-    },
-    {
-      title: "Origin",
-      links: [
-        { label: "France", path: "/category/france", category: "france" },
-        { label: "Italy", path: "/category/italy", category: "italy" },
-      ],
-    },
-  ];
+  const { filterOptions, loading, error, changeFilter } = useCategory(); // Ensure changeFilter is properly consumed
 
   // Handle button click to toggle the dropdown
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
-  // Close the dropdown when a category link is clicked and set the active category
-  const handleCategoryClick = (category) => {
-    changeCategory(category); // Optionally trigger category change
-    setActiveCategory(category); // Set the active category
-    setIsOpen(false); // Close the dropdown menu
+  // Close the dropdown when a filter link is clicked and set the active filter
+  const handleFilterClick = (filter, value) => {
+    if (changeFilter) { // Ensure changeFilter exists before calling
+      changeFilter(filter, value);
+      setActiveFilter(value);
+      setIsOpen(false);
+    }
   };
 
   // Close dropdown when clicked outside
@@ -65,66 +38,92 @@ const NavbarDropdown = ({ changeCategory }) => {
     };
   }, []);
 
+  // Show a loading spinner while fetching data
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // Handle errors
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  // Check if filters data is valid
+  const isFiltersValid = Object.keys(filterOptions).length > 0;
+
   return (
     <div className="relative group">
       <button
         className="text-white font-semibold flex items-center"
-        onClick={toggleDropdown} // Toggle dropdown on button click
+        onClick={toggleDropdown}
+        aria-expanded={isOpen ? "true" : "false"}
+        aria-controls="dropdown-menu"
       >
         <span className="mr-2">Perfume</span>
 
         {/* Change the icon dynamically based on dropdown state */}
         {isOpen ? (
-          <FaChevronUp className="h-5 w-5" /> // Show Chevron Up when dropdown is open
+          <FaChevronUp className="h-5 w-5" />
         ) : (
-          <FaChevronDown className="h-5 w-5" /> // Show Chevron Down when dropdown is closed
+          <FaChevronDown className="h-5 w-5" />
         )}
       </button>
 
       {/* Dropdown Menu */}
-      {isOpen && (
+      {isOpen && isFiltersValid && (
         <motion.div
-          ref={dropdownRef} // Attach ref to dropdown menu
-          className="fixed w-screen mt-2 bg-[#bbab9e] divide-y divide-gray-100 shadow-lg rounded-lg z-50"
-          style={{
-            left: "0%", // Centers it horizontally
-            transform: "translateX(-100%)", // Shifts it to the center
-          }}
+          ref={dropdownRef}
+          className="fixed left-0 w-full mt-2 bg-[#bbab9e] divide-y divide-gray-100 shadow-lg rounded-lg z-50 dark:bg-gray-800 dark:divide-gray-600 dark:text-white"
+          id="dropdown-menu"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
         >
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 max-w-screen-xl mx-auto">
-            {categories.map((section, index) => (
-              <div key={index} className="col-span-1">
-                <p className="font-bold text-sm text-gray-700 mb-2">
-                  {section.title}
-                </p>
-                <ul>
-                  {section.links.map((link, idx) => (
-                    <li
-                      key={idx}
-                      className={`text-sm text-gray-600 hover:bg-[#bbab9ed5] hover:shadow-md rounded-md ${
-                        activeCategory === link.category
-                          ? "bg-[#654e2785] text-white"
-                          : ""
-                      }`} // Add active class if category is selected
-                    >
-                      <Link
-                        to={link.path}
-                        className="block px-4 py-2"
-                        onClick={() => handleCategoryClick(link.category)} // Close dropdown on click
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            {/* Map over each filter category */}
+            {Object.entries(filterOptions).map(([filterName, options]) => {
+              // Ensure options is an array before rendering
+              if (Array.isArray(options) && options.length > 0) {
+                return (
+                  <div key={filterName} className="col-span-1">
+                    <p className="font-bold text-sm text-gray-700 mb-2 dark:text-gray-300">
+                      {filterName.charAt(0).toUpperCase() + filterName.slice(1)}
+                    </p>
+                    <ul>
+                      {/* Map over each option in the filter category */}
+                      {options.map((option) => (
+                        <li
+                          key={option.id}
+                          className={`text-sm text-gray-600 hover:bg-[#bbab9ed5] hover:shadow-md rounded-md dark:text-gray-300 dark:hover:bg-[#bbab9ed5] dark:hover:text-white ${
+                            activeFilter === option.id
+                              ? "bg-[#654e2785] text-white dark:bg-[#654e2785]"
+                              : ""
+                          }`}
+                        >
+                          {/* Wrap the filter option in a Link to change the URL */}
+                          <Link
+                            to={`/products?${filterName}=${option.name}`} // Dynamically change URL
+                            className="block px-4 py-2"
+                            onClick={() => handleFilterClick(filterName, option.name)} // Pass filter name and value (ID)
+                          >
+                            {option.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              }
+              return null; // Return null if options are invalid
+            })}
           </div>
         </motion.div>
+      )}
+
+      {/* Display message if filters are invalid or empty */}
+      {!isFiltersValid && (
+        <div className="text-red-500 p-4">No filters available.</div>
       )}
     </div>
   );

@@ -7,32 +7,35 @@ import ButtonWishlist from "../components/ButtonWishlist";
 import RelatedProducts from "../components/Related";
 
 const SingleProduct = () => {
-  const { singleProduct, fetchSingleProduct } = useProduct();
-  const { perfumeCode } = useParams();
+  const { singleProduct, fetchSingleProduct, error } = useProduct();
+  const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState("");
 
+  // Fetch product when ID changes
   useEffect(() => {
-    if (perfumeCode) {
-      fetchSingleProduct(perfumeCode);
+    if (id) {
+      fetchSingleProduct(id);
     }
-  }, [perfumeCode]);
+  }, [id]);
 
+  // Handle image path (single string)
   useEffect(() => {
-    if (singleProduct?.image) {
-      setSelectedImage(singleProduct.image);
+    if (singleProduct?.images) {
+      setSelectedImage(`http://localhost:8000${singleProduct.images}`);
     }
   }, [singleProduct]);
 
-  const formatPrice = (price) => {
-    return price
+  // Ensure valid price format
+  const formatPrice = (price) =>
+    price
       ? new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(price)
+        style: "currency",
+        currency: "USD",
+      }).format(price)
       : "Price unavailable";
-  };
 
+  // Quantity handlers
   const increaseQuantity = () => {
     if (quantity < singleProduct.stock) setQuantity(quantity + 1);
   };
@@ -41,73 +44,50 @@ const SingleProduct = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
 
-  if (!singleProduct) {
-    return <p className="text-center py-10">Loading...</p>;
-  }
+  if (error) return <p className="text-center py-10 text-red-500">{error}</p>;
+  if (!singleProduct) return <p className="text-center py-10">Loading...</p>;
 
   return (
-    <div className="mx-auto max-w-screen-xl p-4">
+    <div className="p-4 min-h-screen">
       <motion.div
+        className="max-w-6xl mx-auto p-4 shadow-md rounded-lg mt-10 mb-10 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="max-w-6xl mx-auto p-4 shadow-md rounded-lg mt-10 mb-10 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 justify-center"
+        transition={{ duration: 0.5 }}
       >
-        {/* Product Image Section */}
-        <div className="flex flex-col">
-          {selectedImage ? (
-            <img
-              src={selectedImage}
-              alt={singleProduct.title || "Product Image"}
-              className="w-full h-auto object-cover rounded-md mb-4"
-            />
-          ) : (
-            <img
-              src="/path/to/fallback-image.jpg"
-              alt="Fallback Image"
-              className="w-full h-auto object-cover rounded-md mb-4"
-            />
-          )}
+        {/* Product Image */}
+        <motion.div
+          className="flex flex-col mb-4 md:mb-0"
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <img
+            src={selectedImage || "/path/to/fallback-image.jpg"}
+            alt={singleProduct.title || "Product Image"}
+            className="w-full h-auto object-cover rounded-md"
+          />
+        </motion.div>
 
-          {/* Thumbnails */}
-          <div className="flex space-x-4 border border-gray-300 p-2 rounded-md overflow-x-auto">
-            {singleProduct.images?.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`Thumbnail ${index}`}
-                className="w-16 h-16 object-cover rounded-md cursor-pointer"
-                onClick={() => setSelectedImage(image)}
-              />
-            ))}
-          </div>
-        </div>
+        {/* Product Details */}
+        <motion.div
+          className="flex flex-col space-y-4"
+          initial={{ x: 100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-3xl font-bold">{singleProduct.title || "No Title"}</h1>
+          <p className="text-gray-600">{singleProduct.short_description || "No description available."}</p>
+          <p className="text-xl font-semibold">{formatPrice(singleProduct.price)}</p>
+          <p className="text-sm text-gray-500">Category: {singleProduct.category || "Not specified"}</p>
+          <p className="text-yellow-500">Rating: {singleProduct.rating || "No rating"} ★</p>
 
-        {/* Product Details Section */}
-        <div className="flex flex-col space-y-4">
-          <h1 className="text-3xl text-black font-bold mb-4">
-            {singleProduct.title || "No Title"}
-          </h1>
-          <p className="text-gray-600 mb-4">
-            {singleProduct.description || "No description available."}
-          </p>
-          <p className="text-xl font-semibold mb-4">
-            {formatPrice(singleProduct.price)}
-          </p>
-          <p className="text-sm text-gray-500">
-            Category: {singleProduct.category || "No category"}
-          </p>
-          <p className="text-yellow-500">
-            Rating: {singleProduct.rating || "No rating"} ★
+          <p className={singleProduct.stock > 0 ? "text-green-500" : "text-red-500"}>
+            {singleProduct.stock > 0 ? `In Stock: ${singleProduct.stock}` : "Out of Stock"}
           </p>
 
-          {singleProduct.stock <= 0 ? (
-            <p className="text-red-500">Out of Stock</p>
-          ) : (
-            <p className="text-green-500">In Stock: {singleProduct.stock}</p>
-          )}
-
-          <div className="flex items-center bg-gray-200 w-24 space-x-4 mt-6">
+          {/* Quantity Selector */}
+          <div className="flex items-center bg-gray-200 w-full sm:w-24 space-x-4 mt-6">
             <button
               onClick={decreaseQuantity}
               className="bg-[#508380] text-white px-4 py-2 rounded-md hover:bg-gray-400"
@@ -116,7 +96,7 @@ const SingleProduct = () => {
             >
               -
             </button>
-            <span className="text-xl text-black">{quantity}</span>
+            <span className="text-xl">{quantity}</span>
             <button
               onClick={increaseQuantity}
               className="bg-[#508380] text-white px-4 py-2 rounded-md hover:bg-gray-400"
@@ -131,64 +111,84 @@ const SingleProduct = () => {
             <ButtonCart product={singleProduct} quantity={quantity} />
             <ButtonWishlist product={singleProduct} />
           </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Product Description and Reviews Section */}
+      <motion.div
+        className="max-w-6xl mx-auto bg-white p-6 shadow-md rounded-md"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left Column - Product Description */}
+          <div className="w-full">
+            <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
+            <p className="text-gray-600 block whitespace-normal break-words">{singleProduct.long_description || "No detailed description available."}</p>
+          </div>
+
+
+          {/* Right Column - Product Reviews */}
+          <div>
+            <h3 className="text-xl font-semibold">Customer Reviews</h3>
+
+            {/* Display Reviews */}
+            {singleProduct.reviews && singleProduct.reviews.length > 0 ? (
+              <div className="mt-4 space-y-4">
+                {singleProduct.reviews.map((review, index) => (
+                  <div key={index} className="border-b pb-4">
+                    <p className="text-gray-800 font-medium">{review.user_name}</p>
+                    <p className="text-yellow-500">{"★".repeat(review.rating)}</p>
+                    <p className="text-gray-600">{review.comment}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No reviews yet. Be the first to leave one!</p>
+            )}
+          </div>
+        </div>
+
+        {/* Add a Review Section - Full Width Below */}
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold">Leave a Review</h3>
+          <form className="mt-4 space-y-4">
+            <input
+              type="text"
+              placeholder="Your Name"
+              className="w-full border p-2 rounded-md"
+            />
+            <select className="w-full border p-2 rounded-md">
+              <option value="5">⭐️⭐️⭐️⭐️⭐️ - Excellent</option>
+              <option value="4">⭐️⭐️⭐️⭐️ - Good</option>
+              <option value="3">⭐️⭐️⭐️ - Average</option>
+              <option value="2">⭐️⭐️ - Below Average</option>
+              <option value="1">⭐️ - Poor</option>
+            </select>
+            <textarea
+              placeholder="Write your review..."
+              className="w-full border p-2 rounded-md h-24"
+            ></textarea>
+            <button
+              type="submit"
+              className="bg-[#508380] text-white px-6 py-2 rounded-md hover:bg-gray-700"
+            >
+              Submit Review
+            </button>
+          </form>
         </div>
       </motion.div>
 
-      <div className="flex flex-wrap justify-center space-x-10 h-auto shadow p-4">
-        {/* Description Section */}
-        <motion.div
-          className="mt-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
-          <p className="text-gray-600">
-            {singleProduct.fullDescription ||
-              "No detailed description available."}
-          </p>
-        </motion.div>
-
-        {/* Reviews Section */}
-        <motion.div
-          className="mt-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-2xl font-semibold mb-4">Customer Reviews</h2>
-          <div className="space-y-4">
-            {singleProduct.reviews?.length > 0 ? (
-              singleProduct.reviews.map((review, index) => (
-                <motion.div
-                  key={index}
-                  className="border-b pb-4 mb-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.2 }}
-                >
-                  <p className="text-lg font-medium">{review.userName}</p>
-                  <p className="text-yellow-500">{"★".repeat(review.rating)}</p>
-                  <p className="text-gray-700">{review.comment}</p>
-                </motion.div>
-              ))
-            ) : (
-              <p className="text-gray-500">No reviews yet.</p>
-            )}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Related Products Section */}
-      <div className="mt-12">
-        <RelatedProducts
-          key={singleProduct?.category}
-          category={singleProduct.category}
-        />
-      </div>
+      {/* Related Products */}
+      <motion.div
+        className="mt-12 max-w-6xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {singleProduct && <RelatedProducts product={singleProduct} />}
+      </motion.div>
     </div>
   );
 };

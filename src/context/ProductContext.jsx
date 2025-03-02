@@ -17,82 +17,85 @@ export const ProductProvider = ({ children }) => {
 
   const API_BASE_URL = "http://127.0.0.1:8000"; // Ensure this is correct
 
-  const fetchProducts = async () => {
+  // Fetch all products with pagination
+  const fetchProducts = async (page = 1) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/perfume/`, {
-        headers: { "Content-Type": "application/json" },
-      });
-      setProducts(response.data);
-      console.log("Fetched products", response.data);
+      const response = await axios.get(`${API_BASE_URL}/api/perfumes?page=${page}`);
+      const fetchedProducts = response.data?.data || []; // Default to empty array if data is undefined
+
+      setProducts((prevProducts) =>
+        page === 1 ? fetchedProducts : [...prevProducts, ...fetchedProducts]
+      );
+      console.log(`Fetched page ${page}:`, fetchedProducts);
     } catch (error) {
       console.error("Failed to fetch products", error);
       setError("Failed to fetch products. Please try again later.");
     }
   };
 
-  const fetchSingleProduct = async (perfume_code) => {
-    if (!perfume_code || typeof perfume_code !== "string") {
-      setError("Invalid product code");
-      return;
-    }
-
-    console.log("Fetching product with code:", perfume_code);
-    setError(null);
+  
+  const fetchSingleProduct = async (id) => {
+    console.log("Fetching product with ID:", id);
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/perfume/${perfume_code}`,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const product = response.data;
-      setSingleProduct(product);
-      fetchRelatedProducts(product.category, product.id);
-    } catch (error) {
-      console.error("Failed to fetch product", error);
-      setError(
-        error.response?.data?.detail ||
-          "Failed to fetch product. Please try again later."
-      );
-    }
-  };
-
-  const fetchRelatedProducts = async (category, currentProductId) => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/perfume?category=${category}`,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await axios.get(`${API_BASE_URL}/api/perfumes/${id}`);
+  
       if (response.status === 200) {
-        const related = response.data.filter(
-          (product) => product.id !== currentProductId
-        );
-        setRelatedProducts(related);
+        const product = response.data;
+        setSingleProduct(product);
+        setError(null);
+  
+        // Fetch related products after getting the main product details
+        fetchRelatedProducts(product);
       } else {
-        throw new Error(`Unexpected response status: ${response.status}`);
+        throw new Error("Unexpected response format");
       }
-    } catch (error) {
-      if (error.response) {
-        // Server responded with a status code outside the 2xx range
-        console.error("Backend returned an error:", error.response.data);
-        setError(
-          `Server error: ${error.response.status} - ${error.response.statusText}`
-        );
-      } else if (error.request) {
-        // Request was made but no response received
-        console.error("No response received:", error.request);
-        setError(
-          "No response from server. Please check your network connection."
-        );
-      } else {
-        // Error setting up the request
-        console.error("Error setting up request:", error.message);
-        setError(`Error: ${error.message}`);
-      }
+    } catch (err) {
+      setError("Product not found");
+      console.error("Error fetching product:", err);
     }
   };
+  
+  
+  const fetchRelatedProducts = async (singleProduct) => {
+    if (!singleProduct) return;
+  
+    const { brand_id, personality_id, origin_id, gender_id, id } = singleProduct;
+  
+    try {
+      // Construct query parameters dynamically based on available product attributes
+      const params = new URLSearchParams();
+      if (brand_id) params.append("brand_id", brand_id);
+      if (personality_id) params.append("personality_id", personality_id);
+      if (origin_id) params.append("origin_id", origin_id);
+      if (gender_id) params.append("gender_id", gender_id);
+  
+      // Fetch related products
+      const response = await axios.get(
+        `${API_BASE_URL}/api/perfumes?${params.toString()}`
+      );
+  
+      // Log the response to debug the issue
+      console.log("Related products response:", response);
+  
+      // Check if response is valid and an array
+      if (response.status === 200 && Array.isArray(response.data)) {
+        const related = response.data.filter((product) => product.id !== id); // Exclude the current product
+        if (related.length > 0) {
+          setRelatedProducts(related);
+        } else {
+          setRelatedProducts([]); // No related products, return an empty array
+        }
+      } else {
+        throw new Error("Invalid response format or no data returned");
+      }
+    } catch (error) {
+      console.error("Error fetching related products:", error.message);
+      setRelatedProducts([]); // Ensure related products list is empty in case of an error
+    }
+  };
+  
+  
+  
 
   return (
     <ProductContext.Provider
@@ -100,6 +103,7 @@ export const ProductProvider = ({ children }) => {
         products,
         singleProduct,
         relatedProducts,
+        error,
         fetchProducts,
         fetchSingleProduct,
         fetchRelatedProducts,

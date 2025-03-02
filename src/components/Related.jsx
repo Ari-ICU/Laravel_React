@@ -1,23 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React,{ useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useProduct } from "../context/ProductContext";
 import { Link } from "react-router-dom";
 import ButtonWishlist from "./ButtonWishlist";
+import PropTypes from 'prop-types';
 import ButtonCart from "./ButtonCart";
 
-const RelatedProducts = ({ category }) => {
+const RelatedProducts = ({ product }) => {
   const { relatedProducts, fetchRelatedProducts } = useProduct();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!category) return; // Prevent unnecessary fetches
+    if (!product) return;
 
-    const controller = new AbortController(); // ✅ Fix: Prevent memory leaks
+    const controller = new AbortController();
     const fetchData = async () => {
       setError(null);
+      setLoading(true);
+
+      // Construct the filter object with non-null values
+      const filters = {};
+      if (product.gender_id) filters.gender_id = product.gender_id;
+      if (product.origin_id) filters.origin_id = product.origin_id;
+      if (product.personality_id) filters.personality_id = product.personality_id;
+      if (product.brand_id) filters.brand_id = product.brand_id;
+
       try {
-        await fetchRelatedProducts(category, { signal: controller.signal });
+        // Fetch related products with the constructed filters
+        await fetchRelatedProducts(filters, { signal: controller.signal });
       } catch (err) {
         if (err.name !== "AbortError") {
           setError(err.message || "Failed to fetch related products.");
@@ -29,8 +40,8 @@ const RelatedProducts = ({ category }) => {
 
     fetchData();
 
-    return () => controller.abort();
-  }, [category, fetchRelatedProducts]);
+    return () => controller.abort(); // Cleanup on component unmount
+  }, []);
 
   if (loading) {
     return <p>Loading related products...</p>;
@@ -56,25 +67,28 @@ const RelatedProducts = ({ category }) => {
             animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
             transition={{ delay: index * 0.2 }}
           >
-            <Link to={`/product/${product.code}`}>
+            <Link to={`/product/${product.id}`}>
               <img
-                src={product.image}
+                src={`http://localhost:8000${product.images}`} // Image path from the response
                 alt={`Product: ${product.title}`}
                 className="w-full h-40 object-cover rounded-md"
               />
             </Link>
-            <Link to={`/product/${product.code}`}>
+            <Link to={`/product/${product.id}`}>
               <h2 className="text-xl font-semibold text-gray-800 hover:underline">
                 {product.title}
               </h2>
             </Link>
-            <p className="text-gray-500 truncate">{product.description}</p>
+            <p className="text-gray-500 truncate">{product.short_description}</p>
             <div className="flex justify-between items-center">
               <p className="text-lg font-bold text-green-600">
-                ${product.price.toFixed(2)}
+                ${parseFloat(product.price).toFixed(2)}
               </p>
               <p className="text-sm text-gray-500">
-                Category: {product.category}
+                {product.gender ? `Gender: ${product.gender}` : ""}
+                {product.origin ? `Origin: ${product.origin}` : ""}
+                {product.personality ? `Personality: ${product.personality}` : ""}
+                {product.brand ? `Brand: ${product.brand}` : ""}
               </p>
             </div>
             {product.stock <= 0 ? (
@@ -94,6 +108,25 @@ const RelatedProducts = ({ category }) => {
       </div>
     </div>
   );
+};
+RelatedProducts.propTypes = {
+  product: PropTypes.shape({
+    gender_id: PropTypes.number,
+    origin_id: PropTypes.number,
+    personality_id: PropTypes.number,
+    brand_id: PropTypes.number,
+    id: PropTypes.number.isRequired,
+    images: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    short_description: PropTypes.string,
+    price: PropTypes.number.isRequired,
+    gender: PropTypes.string,
+    origin: PropTypes.string,
+    personality: PropTypes.string,
+    brand: PropTypes.string,
+    stock: PropTypes.number.isRequired,
+    rating: PropTypes.number,
+  }).isRequired,
 };
 
 export default RelatedProducts;

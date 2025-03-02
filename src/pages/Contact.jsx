@@ -17,12 +17,12 @@ const Contact = () => {
   } = useContact();
 
   return (
-    <div className="flex flex-col items-center pt-6 justify-center min-h-screen text-black space-y-6">
+    <div className="flex flex-col items-center pt-6 justify-center min-h-screen space-y-6">
       <motion.div
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
+        className="p-8 rounded-lg shadow-lg w-full max-w-md"
       >
         <h1 className="text-2xl font-bold mb-4 text-center">
           Get in touch with us here
@@ -82,7 +82,7 @@ const Contact = () => {
         </form>
       </motion.div>
 
-      <div className="max-w-screen w-full">
+      <div className="w-full">
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31269.199427208852!2d104.8870912!3d11.5769344!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310951a354c389d9%3A0xd07843ea8349e8c1!2sRoyal%20Phnom%20Penh%20Hospital!5e0!3m2!1sen!2skh!4v1737935756630!5m2!1sen!2skh"
           width="100%"

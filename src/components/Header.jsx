@@ -1,97 +1,164 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  FaUserAlt,
-  FaSignInAlt,
   FaBars,
   FaTimes,
   FaSearch,
   FaShoppingCart,
+  FaMoon,
+  FaSun,
+  FaSignInAlt,
+  FaUserAlt,
+  FaHeart,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import { useCategory } from "../context/CategoryContext";
+import { useWishlist } from "../context/WishlistContext";
 import NavbarDropdown from "./NavbarDropdown";
 import ProfileDropdown from "./ProfileDropdown";
-import IconBtn from "./IconBtn";
-import Cart from "../pages/Cart"; // Assuming Cart is a separate component
 import logo from "../assets/logo.png";
+
+// Lazy load components
+const LazyCart = lazy(() => import("../pages/Cart"));
 
 const Header = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { cartItems, loading } = useCart();
+  const { wishlist } = useWishlist(); // Get wishlist items from context
   const { changeCategory } = useCategory();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false); // State for cart visibility
-  const cartRef = useRef(null); // Ref for cart container
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const cartRef = useRef(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     setIsMobileMenuOpen(false);
     setIsProfileDropdownOpen(false);
     setIsSearchOpen(false);
-    setIsCartOpen(false); // Close the cart when location changes
+    setIsCartOpen(false);
+
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+      setIsDarkMode(storedTheme === "dark");
+    }
   }, [location]);
 
-  // Close cart if clicked outside of it
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    const newTheme = !isDarkMode ? "dark" : "light";
+    localStorage.setItem("theme", newTheme);
+  };
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (cartRef.current && !cartRef.current.contains(event.target)) {
-        setIsCartOpen(false); // Close the cart when clicking outside
+        setIsCartOpen(false);
       }
     };
 
-    // Add event listener to close cart
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup the event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  const cartItemCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  const wishlistItemCount = Array.isArray(wishlist) 
+    ? wishlist.length 
+    : 0;
+
+  console.log("Cart Item Count:", cartItemCount); // Debugging line to check cart count
+  console.log("Wishlist Item Count:", wishlistItemCount); // Debugging line to check wishlist count
+
   return (
-    <header className="bg-[#AD9C8E] text-[#F7E6CA] shadow sticky top-0 z-50 w-full">
+    <header className="text-[#F7E6CA] dark:text-[#EAEAEA] shadow sticky top-0 z-50 w-full">
       <nav className="border-gray-200 max-w-screen-xl mx-auto p-4 flex items-center justify-between">
-        {/* Logo */}
         <Link to="/" className="flex items-center space-x-3">
-          <img src={logo} className="h-16" alt="Perfume Logo" />
+          <img src={logo} className="h-16" alt="Logo" />
         </Link>
 
-        {/* Desktop Menu */}
         <ul className="hidden md:flex items-center space-x-8 font-medium text-sm">
-          <li>
-            <Link to="/" className="hover:underline">
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link to="/about" className="hover:underline">
-              About Us
-            </Link>
-          </li>
+          {[
+            { name: "Home", path: "/" },
+            { name: "About Us", path: "/about" },
+          ].map((item) => (
+            <li key={item.name}>
+              <Link
+                to={item.path}
+                className={`hover:underline ${location.pathname === item.path ? "text-[#FFD700]" : ""
+                  }`}
+              >
+                {item.name}
+              </Link>
+            </li>
+          ))}
           <li>
             <NavbarDropdown changeCategory={changeCategory} />
           </li>
-          <li>
-            <Link to="/reviews" className="hover:underline">
-              Review
-            </Link>
-          </li>
-          <li>
-            <Link to="/contact" className="hover:underline">
-              Contact Us
-            </Link>
-          </li>
+          {[
+            // { name: "Review", path: "/reviews" },
+            { name: "Contact Us", path: "/contact" },
+          ].map((item) => (
+            <li key={item.name}>
+              <Link
+                to={item.path}
+                className={`hover:underline ${location.pathname === item.path ? "text-[#FFD700]" : ""
+                  }`}
+              >
+                {item.name}
+              </Link>
+            </li>
+          ))}
         </ul>
 
-        {/* Profile, Search, Cart & Mobile Menu Button */}
         <div className="flex items-center space-x-4">
-          <button onClick={() => setIsSearchOpen(true)} className="text-white">
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="text-white cursor-pointer"
+          >
             <FaSearch className="w-6 h-6" />
           </button>
-          <IconBtn />
+
+          {/* Cart Icon with Badge */}
+          <button
+            onClick={() => setIsCartOpen(!isCartOpen)}
+            className="relative text-white cursor-pointer"
+          >
+            <FaShoppingCart className="w-6 h-6" />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                {cartItemCount}
+              </span>
+            )}
+          </button>
+
+          <Link to="/wishlist" className="relative text-white cursor-pointer">
+            <FaHeart className="w-6 h-6" />
+            {wishlistItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                {wishlistItemCount}
+              </span>
+            )}
+          </Link>
+
           {user ? (
             <div
               className="relative"
@@ -109,16 +176,16 @@ const Header = () => {
             </Link>
           )}
 
-          {/* Cart Button */}
-          <button
-            onClick={() => setIsCartOpen(!isCartOpen)}
-            className="text-white"
-          >
-            <FaShoppingCart className="w-6 h-6" />
+          <button onClick={toggleDarkMode} className="text-white">
+            {isDarkMode ? (
+              <FaSun className="w-6 h-6" />
+            ) : (
+              <FaMoon className="w-6 h-6" />
+            )}
           </button>
 
           <button
-            className="md:hidden text-white focus:outline-none"
+            className="md:hidden text-white"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
@@ -132,100 +199,63 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <motion.div
-          className="md:hidden absolute top-16 left-0 w-full bg-[#AD9C8E] shadow-lg"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.3 }}
-        >
-          <ul className="flex flex-col items-center space-y-4 p-6 text-sm">
-            <li>
-              <Link
-                to="/"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:underline"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/about"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:underline"
-              >
-                About Us
-              </Link>
-            </li>
-            <li>
-              <NavbarDropdown changeCategory={changeCategory} />
-            </li>
-            <li>
-              <Link
-                to="/reviews"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:underline"
-              >
-                Review
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/contact"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:underline"
-              >
-                Contact Us
-              </Link>
-            </li>
-          </ul>
-        </motion.div>
-      )}
-
-      {/* Search Popup */}
-      {isSearchOpen && (
-        <motion.div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <div className="bg-gray-500 p-4 rounded-lg shadow-lg w-96">
+        <div className="md:hidden fixed top-0 left-0 w-full h-full bg-[rgba(141,72,72)] z-50">
+          <div className=" h-full p-4 flex flex-col space-y-4">
             <button
-              onClick={() => setIsSearchOpen(false)}
-              className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-right text-gray-600"
             >
               <FaTimes className="w-6 h-6" />
             </button>
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#AD9C8E]"
-            />
+            {[
+              { name: "Home", path: "/" },
+              { name: "About Us", path: "/about" },
+            ].map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`block py-2 text-lg ${location.pathname === item.path ? "text-[#FFD700]" : ""
+                  }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+            <div className="flex justify-center items-center">
+              <NavbarDropdown changeCategory={changeCategory} />
+            </div>
+
+            {[
+              // { name: "Review", path: "/reviews" },
+              { name: "Contact Us", path: "/contact" },
+            ].map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`block py-2 text-lg ${
+                  location.pathname === item.path ? "text-[#FFD700]" : ""
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
-        </motion.div>
+        </div>
       )}
 
-      {/* Full Height Cart Component */}
       {isCartOpen && (
-        <motion.div
-          ref={cartRef} // Attach ref to the cart container
-          className="fixed right-0 top-0 w-80 h-full bg-[rgba(125,99,50)] shadow-lg z-50"
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 10 }}
-          transition={{ duration: 0.3 }}
-        >
-          {/* Close button inside the cart */}
-          <button
-            onClick={() => setIsCartOpen(false)}
-            className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+        <Suspense fallback={<div>Loading Cart...</div>}>
+          <motion.div
+            ref={cartRef}
+            className="fixed right-0 top-0 w-80 h-full bg-[rgba(125,99,50)] text-white p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            <FaTimes className="w-6 h-6" />
-          </button>
-          <Cart />
-        </motion.div>
+            <LazyCart />
+          </motion.div>
+        </Suspense>
       )}
     </header>
   );

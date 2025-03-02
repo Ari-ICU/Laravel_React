@@ -4,45 +4,31 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useCarousel } from "../context/CarouselContext";
 
 const Carousel = () => {
-  const { carousels, loading, error } = useCarousel();
+  const { carousels, loading, error, fetchCarousels } = useCarousel();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const intervalTime = 3000;
+  
+  useEffect(() => {
+    fetchCarousels();
+  }, []);
+  
+  console.log("carousel:", carousels);  // Check data structure here
 
-  // Ensure carousels is an array to avoid runtime errors
-  const validCarousels = Array.isArray(carousels) ? carousels : [];
-
+  // Handle Next & Previous
   const handleNext = () => {
-    if (validCarousels.length > 0) {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % validCarousels.length);
-    }
+    setCurrentIndex((prev) => (prev + 1) % carousels.data.length);
   };
 
   const handlePrev = () => {
-    if (validCarousels.length > 0) {
-      setCurrentIndex(
-        (prevIndex) =>
-          (prevIndex - 1 + validCarousels.length) % validCarousels.length
-      );
-    }
+    setCurrentIndex(
+      (prev) => (prev - 1 + carousels.data.length) % carousels.data.length
+    );
   };
 
-  // Auto-play effect (Only runs if there are items)
-  useEffect(() => {
-    if (validCarousels.length > 0) {
-      const interval = setInterval(handleNext, intervalTime);
-      return () => clearInterval(interval);
-    }
-  }, [currentIndex, validCarousels.length]);
-
-  // Debugging: Check API response
-  useEffect(() => {
-    console.log("Carousels Data:", validCarousels);
-  }, [validCarousels]);
-
+  // Loading state
   if (loading) {
     return (
       <motion.div
-        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4 p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -52,10 +38,11 @@ const Carousel = () => {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <motion.div
-        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4 p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -65,46 +52,51 @@ const Carousel = () => {
     );
   }
 
-  if (validCarousels.length === 0) {
+  // No carousels available
+  if (carousels.data.length === 0) {
     return (
       <motion.div
-        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4"
+        className="max-w-sm mx-auto mt-10 mb-10 bg-white rounded-xl shadow-lg space-y-4 p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <p className="text-center text-gray-500">
-          No carousel items available.
-        </p>
+        <p className="text-center text-gray-500">No carousel items available.</p>
       </motion.div>
     );
   }
+
+  console.log("Image URL:", carousels.data[currentIndex]?.image);
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
-      className="relative max-w-screen h-auto px-2 mx-auto bg-red-300"
+      className="relative max-w-screen h-[550px] px-2 p-1 mx-auto"
     >
-      {validCarousels[currentIndex] && (
+      {/* Carousel Item */}
+      {carousels.data[currentIndex] && (
         <motion.div
           key={currentIndex}
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -100 }}
           transition={{ duration: 0.5 }}
-          className="w-full h-64"
+          className="w-full h-[550px]"
         >
-          <img
-            src={
-              validCarousels[currentIndex]?.image_url || "fallback-image.jpg"
-            }
-            alt={validCarousels[currentIndex]?.name || "Carousel Image"}
-            className="w-full h-full object-cover rounded-lg"
-          />
+      <img
+        src={`http://localhost:8000${carousels.data[currentIndex]?.image}`}  
+        alt={carousels.data[currentIndex]?.title || "Carousel Image"}
+        className="w-full h-full object-cover bg-[#915000]" 
+        loading="lazy" 
+      />
+
+
         </motion.div>
       )}
+
+      {/* Navigation Buttons */}
       <button
         onClick={handlePrev}
         className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700"

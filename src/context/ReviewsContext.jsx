@@ -6,6 +6,7 @@ const ReviewsContext = createContext();
 export const useReviews = () => {
   return React.useContext(ReviewsContext);
 };
+
 const ReviewsProvider = ({ children }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,8 +15,9 @@ const ReviewsProvider = ({ children }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get("/api/reviews");
-        setReviews(response.data);
+        // Correct the endpoint for fetching reviews
+        const response = await axios.get("http://127.0.0.1:8000/api/reviews");
+        setReviews(response.data.data); 
       } catch (err) {
         setError(err);
       } finally {
@@ -26,10 +28,11 @@ const ReviewsProvider = ({ children }) => {
     fetchReviews();
   }, []);
 
-  const addReviews = async () => {
+  const addReviews = async (reviewData) => {
     try {
-      const response = await axios.post("/api/reviews");
-      setReviews(response.data);
+      // Correct the endpoint for posting a review
+      const response = await axios.post("http://127.0.0.1:8000/api/review", reviewData);
+      setReviews([...reviews, response.data]); // Add new review to the state
     } catch (err) {
       setError(err);
     } finally {

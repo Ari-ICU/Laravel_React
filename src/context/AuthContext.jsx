@@ -10,17 +10,21 @@ export const AuthProvider = ({ children }) => {
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
+  // Sign in method
   const signIn = async (credentials) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
       });
 
+      const text = await response.text();
+      console.log("Full login response:", text);
+
       if (!response.ok) throw new Error("Sign-in failed");
 
-      const userData = await response.json();
+      const userData = JSON.parse(text);
       setUser(userData);
       setIsAuthenticated(true);
       return { success: true, user: userData };
@@ -30,35 +34,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
   const signUp = async (credentials) => {
     try {
-      console.log("Sending sign-up request:", credentials);
-
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
       });
 
-      const responseData = await response.json();
-      console.log("Sign-up response:", responseData);
-
       if (!response.ok) {
-        throw new Error(
-          responseData.detail
-            ? JSON.stringify(responseData.detail)
-            : "Sign-up failed"
-        );
+        throw new Error(`Error: ${response.statusText}`);
       }
 
-      setUser(responseData);
+      const responseData = await response.json(); 
+      console.log("SignUp response:", responseData);
+
+      const { user, token } = responseData;
+      setUser(user);
       setIsAuthenticated(true);
-      return { success: true, user: responseData };
+
+      localStorage.setItem("authToken", token);
+
+      return { success: true, user, token };
     } catch (error) {
       console.error("Error during sign-up:", error);
       return { success: false, error: error.message };
     }
   };
+
+
 
   const signOut = async () => {
     try {
@@ -68,8 +73,13 @@ export const AuthProvider = ({ children }) => {
 
       if (!response.ok) throw new Error("Sign-out failed");
 
+      // Clear user and authentication state
       setUser(null);
       setIsAuthenticated(false);
+
+      // Optionally, remove the token from localStorage
+      localStorage.removeItem("authToken");
+
       return { success: true };
     } catch (error) {
       console.error("Error during sign-out:", error);
