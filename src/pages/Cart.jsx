@@ -5,27 +5,20 @@ import { motion } from "framer-motion";
 import { FaTrash } from "react-icons/fa";
 
 const Cart = () => {
-  const { cartItems = [], removeFromCart, updateQuantity, addToCart } = useCart();
+  const { cartItems = [], removeFromCart, updateQuantity } = useCart();
 
   // Calculate totalPrice using useMemo for optimization
   const totalPrice = useMemo(
     () =>
       cartItems.reduce((total, item) => {
-        const itemPrice = item.perfume?.price || 0; // Ensure price is valid
-        return total + itemPrice * item.quantity;
+        const itemPrice = Number(item.perfume?.price) || 0; // Ensure price is a valid number
+        const itemQuantity = Number(item.quantity) || 0; // Ensure quantity is a valid number
+        return total + itemPrice * itemQuantity;
       }, 0),
     [cartItems]
   );
 
-  // Handle adding items to the cart with stock validation
-  const handleAddToCart = (item) => {
-    if (item.quantity < item.perfume?.stock) {
-      addToCart(item); // Assuming addToCart will handle adding or updating the cart item
-    } else {
-      alert("Sorry, you cannot add more of this item. Stock limit reached.");
-    }
-  };
-
+  // Handle quantity increase
   const handleIncreaseQuantity = (item) => {
     if (item.quantity < item.perfume?.stock) {
       updateQuantity(item.id, item.quantity + 1);
@@ -34,6 +27,7 @@ const Cart = () => {
     }
   };
 
+  // Handle quantity decrease
   const handleDecreaseQuantity = (item) => {
     if (item.quantity > 1) {
       updateQuantity(item.id, item.quantity - 1);
@@ -42,7 +36,7 @@ const Cart = () => {
 
   useEffect(() => {
     console.log("Cart updated:", cartItems);
-  }, [cartItems]); // To track changes in cartItems
+  }, [cartItems]);
 
   return (
     <div className="mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,7 +48,7 @@ const Cart = () => {
         <div className="text-center mt-10 text-xl text-gray-400">
           <p>Your cart is empty.</p>
           <Link
-            to="/product"
+            to="/products"
             className="text-blue-500 mt-4 inline-block font-sans underline"
           >
             Continue Shopping
@@ -70,7 +64,7 @@ const Cart = () => {
             {cartItems.map((item, index) => (
               <div
                 key={`${item.id}-${index}`}
-                className="flex flex-col sm:flex-row justify-between gap-2 items-center p-6 border border-gray-300 bg-[#9e7070] rounded-lg shadow-lg space-y-4 sm:space-y-0 hover:bg-[#555] transition-all duration-200 relative"
+                className="flex flex-col sm:flex-row justify-between gap-2 items-center p-6 border border-gray-300 bg-gray-200 rounded-lg shadow-lg space-y-4 sm:space-y-0 hover:bg-gray-300 transition-all duration-200 relative"
               >
                 {/* Trash button positioned at the top-right */}
                 <button
@@ -82,13 +76,13 @@ const Cart = () => {
 
                 <div className="flex items-center space-x-4">
                   <img
-                    src={item.images ? `http://localhost:8000${item.images}` : "https://via.placeholder.com/150"}
+                    src={item.perfume.images ? `http://localhost:8000${item.perfume.images}` : "/placeholder.jpg"}
                     alt={item.name}
                     className="w-14 h-14 object-cover rounded-md shadow-md"
                   />
                   <div>
                     <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
-                    <span>
+                    <span className="text-gray-800">
                       ${((Number(item.perfume?.price) || 0) * (Number(item.quantity) || 0)).toFixed(2)}
                     </span>
                     <div className="flex items-center gap-2 mt-2">
@@ -99,7 +93,7 @@ const Cart = () => {
                       >
                         -
                       </button>
-                      <span className="text-lg font-medium">{item.quantity}</span>
+                      <span className="text-lg font-medium text-gray-800">{item.quantity}</span>
                       <button
                         onClick={() => handleIncreaseQuantity(item)}
                         disabled={item.quantity >= item.perfume?.stock}
@@ -130,7 +124,7 @@ const Cart = () => {
                 Proceed to Checkout
               </button>
             </Link>
-            <Link to="/product">
+            <Link to="/products">
               <button className="w-full bg-gray-300 text-black py-3 rounded-lg text-lg font-semibold hover:bg-gray-400 transition-colors">
                 Continue Shopping
               </button>

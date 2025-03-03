@@ -2,16 +2,19 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import p1 from "../assets/partner/p1.png";
+import p2 from "../assets/partner/p2.png";
+import p3 from "../assets/partner/p4.png";
+import p4 from "../assets/partner/p4.png";
 
 const PartnerSection = () => {
   // Static data for partners
   const partners = [
-    { id: 1, logo: "https://via.placeholder.com/150", name: "Partner 1" },
-    { id: 2, logo: "https://via.placeholder.com/150", name: "Partner 2" },
-    { id: 3, logo: "https://via.placeholder.com/150", name: "Partner 3" },
-    { id: 4, logo: "https://via.placeholder.com/150", name: "Partner 4" },
-    { id: 5, logo: "https://via.placeholder.com/150", name: "Partner 5" },
-    { id: 6, logo: "https://via.placeholder.com/150", name: "Partner 6" },
+    { id: 1, logo: p1 , name: "Partner 1" },
+    { id: 2, logo: p2, name: "Partner 2" },
+    { id: 3, logo: p3, name: "Partner 3" },
+    { id: 4, logo: p4, name: "Partner 4" },
+   
   ];
 
   return (
@@ -51,7 +54,7 @@ const PartnerSection = () => {
                 alt={partner.name}
                 className="w-full h-32 object-contain"
               />
-              <p className="text-center mt-4 text-sm font-semibold text-gray-700">
+              <p className="text-center sr-only mt-4 text-sm font-semibold text-gray-700">
                 {partner.name}
               </p>
             </SwiperSlide>

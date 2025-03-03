@@ -78,9 +78,6 @@ const Header = () => {
 
   const cartItemCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
   const wishlistItemCount = Array.isArray(wishlist) 
     ? wishlist.length 
     : 0;

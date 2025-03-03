@@ -1,13 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useReviews } from "../context/ReviewsContext";
+import { useProduct } from "../context/ProductContext";  // Assuming you have a ProductContext to get product data
 import { FaStar } from "react-icons/fa";
 
 const ReviewSection = ({ productId }) => {
   const { reviews, loading, error } = useReviews();
-  const filteredReviews = reviews.filter((review) => review.productId === productId);
+  const { products } = useProduct(); 
   const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Find the product based on productId
+  const product = products?.find((prod) => prod.id === productId);
 
-  const placeholderImage = "https://via.placeholder.com/100?text=No+Image"; // Default image
+  console.log("product :",product)
+  const filteredReviews = reviews.filter((review) => review.productId === productId);
+  const placeholderImage = "https://via.placeholder.com/100?text=No+Image"; 
+  console.log(filteredReviews)
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [filteredReviews]);
 
   if (loading) {
     return (
@@ -39,11 +49,11 @@ const ReviewSection = ({ productId }) => {
 
       <div className="relative max-w-2xl mx-auto h-auto overflow-x-hidden">
         <div className="max-w-md w-full mx-auto rounded-xl shadow-lg px-6 py-6 flex flex-col items-center text-center">
-          {/* Display Product Image with Fix */}
+          {/* Display Product Image */}
           <div className="w-24 h-24 mb-4">
             <img
-              src={filteredReviews[currentIndex]?.image || placeholderImage}
-              alt="Review"
+              src={product?.images ? `http://localhost:8000${product.images}` : placeholderImage}
+              alt="Product"
               className="w-full h-full object-contain rounded-full"
             />
           </div>

@@ -35,7 +35,6 @@ const cartReducer = (state, action) => {
       return state;
   }
 };
-
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, []);
   const [loading, setLoading] = useState(true);
@@ -44,35 +43,49 @@ export const CartProvider = ({ children }) => {
   const API_BASE_URL = "http://127.0.0.1:8000/api/cart"; // Your API endpoint
 
   // Fetch cart on initial load
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(API_BASE_URL);
+  const fetchCart = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}`);
+      if (response.data && Array.isArray(response.data)) {
         dispatch({ type: "SET_CART", payload: response.data });
-      } catch (error) {
-        console.error("Failed to fetch cart:", error);
-        setError("Failed to load cart data.");
-      } finally {
-        setLoading(false);
       }
-    };
-    fetchCart();
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+      setError("Failed to fetch cart.");
+    }
+  };
+
+  useEffect(() => {
+    fetchCart(); // Fetch cart on mount
   }, []);
 
   // Add item to cart
-  const addToCart = useCallback(async (cartData) => {
+  const addToCart = async (cartData) => {
     try {
       setLoading(true);
+  
+      // Optimistic update
+      dispatch({
+        type: "ADD_TO_CART",
+        payload: cartData,
+      });
+  
       const response = await axios.post(`${API_BASE_URL}/add`, cartData);
-      dispatch({ type: "ADD_TO_CART", payload: response.data }); // Assuming backend returns updated cart
+  
+      // Check if the response is just a success message
+      if (response.data && response.data.message) {
+        console.log(response.data.message); 
+        await fetchCart();
+      } else {
+        throw new Error("Invalid response format from server");
+      }
     } catch (error) {
       console.error("Failed to add to cart:", error);
       setError("Failed to add item to cart.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   // Update item quantity
   const updateQuantity = useCallback(async (itemId, quantity) => {
@@ -126,12 +139,14 @@ export const CartProvider = ({ children }) => {
         clearCart,
         loading,
         error,
+        fetchCart
       }}
     >
       {children}
     </CartContext.Provider>
   );
 };
+
 
 export const useCart = () => useContext(CartContext);
 

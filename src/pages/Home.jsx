@@ -23,7 +23,7 @@ const Homepage = () => {
       <Feature />
 
       {/* Review Section */}
-      <ReviewSection />
+      {/* <ReviewSection /> */}
 
       {/* Service section */}
       <ServiceSection />

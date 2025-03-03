@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom"; // To get the current page location
-import { motion } from "framer-motion";
 import { useProduct } from "../context/ProductContext";
-import { useCategory } from "../context/CategoryContext";  // Import useCategory to access the category context
+import { useCategory } from "../context/CategoryContext"; 
 import { Link } from "react-router-dom";
 import ButtonCart from "../components/ButtonCart";
 import ButtonWishlist from "../components/ButtonWishlist";
-import Spinner from "../components/Spinner"; // Import Spinner component
+import Spinner from "../components/Spinner"; 
+import { motion } from "framer-motion";
+
 
 const Product = () => {
   const { fetchProducts, products, hasMore } = useProduct();
@@ -14,9 +15,38 @@ const Product = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [pageTitle, setPageTitle] = useState("All Products");
 
   const location = useLocation(); // Get current location to determine the context
-  const [pageTitle, setPageTitle] = useState(""); // To store dynamic page title
+
+  // Function to get query params from URL
+  const getQueryParams = () => {
+    const queryParams = new URLSearchParams(location.search);
+    const origin = queryParams.get('origin');
+    const brand = queryParams.get('brand');
+    const personality = queryParams.get('personality');
+    const gender = queryParams.get('gender');
+    return { origin, brand, personality, gender };
+  };
+
+  useEffect(() => {
+    const { origin, brand, personality, gender } = getQueryParams();
+    
+    let title = "All Products"; // Default title if no filters are selected
+
+    // Dynamically build the page title based on filters
+    const filtersArray = [];
+    if (origin) filtersArray.push(`Origin: ${origin}`);
+    if (brand) filtersArray.push(`Brand: ${brand}`);
+    if (personality) filtersArray.push(`Personality: ${personality}`);
+    if (gender) filtersArray.push(`Gender: ${gender}`);
+
+    if (filtersArray.length > 0) {
+      title = `Products - ${filtersArray.join(", ")}`;
+    }
+
+    setPageTitle(title);  // Update the page title based on filters
+  }, [location.search]);  // Update the title when the query params change
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -28,35 +58,11 @@ const Product = () => {
     loadProducts();
   }, [page]);
 
-  useEffect(() => {
-    let title = "All Products"; // Default title if no filters are selected
-  
-    // Dynamically set page title based on selected filters
-    if (filters?.gender?.name) {
-      title = `Products for ${filters.gender.name}`;
-    } else if (filters?.brand?.name) {
-      title = `Products by ${filters.brand.name}`;
-    } else if (filters?.origin?.name) {
-      title = `Products from ${filters.origin.name}`;
-    } else if (filters?.personality?.name) {
-      title = `Products for ${filters.personality.name}`;
-    }
-  
-    setPageTitle(title);
-  }, [filters]); 
-  
-  const handleLoadMore = () => {
-    if (!loading && hasMore) {
-      setPage((prevPage) => prevPage + 1); 
-    }
-  };
-
   // Ensure products is an array to prevent errors
   const validProducts = Array.isArray(products) ? products : [];
 
   const filteredProducts = validProducts
     .filter((product) => {
-      // Filter by search query
       return product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.short_description.toLowerCase().includes(searchQuery.toLowerCase());
     });
@@ -107,7 +113,7 @@ const Product = () => {
               </p>
               <div className="flex justify-between items-center mt-2">
                 <p className="text-lg font-bold text-green-600">
-                  ${Number(product.price).toFixed(2)} {/* Ensure price is a number */}
+                  ${Number(product.price).toFixed(2)} 
                 </p>
 
                 <p className="text-sm text-gray-500">{product.category_id}</p>
@@ -136,17 +142,17 @@ const Product = () => {
       </div>
 
       {/* Load More Button */}
-      {filteredProducts.length > 0 && (
+      {/* {filteredProducts.length > 0 && (
         <div className="text-center mt-6">
           <button
             onClick={handleLoadMore}
             className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed w-full sm:w-auto"
-            disabled={loading || !hasMore} // Disable button if loading or no more products
+            disabled={loading || !hasMore} 
           >
             {loading ? <Spinner /> : "Load More"}
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

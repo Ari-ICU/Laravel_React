@@ -1,9 +1,9 @@
 import React from "react";
 import { useCart } from "../context/CartContext";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 const ButtonCart = ({ product, quantity = 1 }) => {
-  const { addToCart } = useCart();
+  const { addToCart, fetchCart } = useCart();
 
   const handleAddToCart = async () => {
     console.log("Product to add to cart:", product);
@@ -14,21 +14,21 @@ const ButtonCart = ({ product, quantity = 1 }) => {
       return;
     }
 
-    // Update to use perfume_id instead of id
     try {
+      // Add the item to the cart
       await addToCart({
-        perfume_id: product.id, // Ensure the field is named correctly as per the backend
+        perfume_id: product.id,
         name: product.name || product.title,
         price: typeof product.price === "number" ? product.price : 0,
         quantity: quantity,
       });
 
-      console.log(`Added ${quantity} of ${product.name || product.title} to cart`);
+      // Fetch the updated cart data from the server
+      await fetchCart();
+
+      console.log("Cart updated after adding:", product);
     } catch (error) {
-      console.error(
-        "Error details when adding to cart:",
-        error.response?.data?.detail || error.message
-      );
+      console.error("Error adding to cart:", error.response?.data?.detail || error.message);
     }
   };
 
@@ -47,7 +47,7 @@ ButtonCart.propTypes = {
     name: PropTypes.string,
     title: PropTypes.string,
     price: PropTypes.number,
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Ensure product has an id field
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   }).isRequired,
   quantity: PropTypes.number,
 };
